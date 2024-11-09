@@ -1,140 +1,175 @@
 /* Estilos generales */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
 body {
-    background-color: #f4f4f9;
-    color: #333;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f2f5;
 }
 
 .container {
-    max-width: 800px;
-    margin: 20px auto;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
-    background-color: #fff;
+    background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
-    color: #333;
-    margin-bottom: 20px;
-}
-
-/* Formulario */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group label {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.form-group input[type="text"],
-.form-group input[type="date"],
-.form-group input[type="time"],
-.form-group select {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-button.btn {
-    background-color: #4caf50;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-button.btn:hover {
-    background-color: #45a049;
-}
-
-/* Tabla */
-table {
-    width: 100%;
-    border-collapse: collapse;
+/* Estilos para el listado de ingresos */
+.listado-ingresos {
+    background-color: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
     margin-top: 20px;
 }
 
-table th,
-table td {
+.listado-ingresos h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.total-registros {
+    background-color: #e9ecef;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    color: #495057;
+    font-weight: bold;
+}
+
+/* Estilos para la tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
     padding: 12px;
-    border: 1px solid #ddd;
     text-align: left;
 }
 
-table th {
-    background-color: #f0f0f0;
-    font-weight: bold;
+td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
 }
 
-.no-results,
-.total-registros {
-    text-align: center;
-    margin: 15px 0;
-    font-weight: bold;
-    color: #555;
+tr:hover {
+    background-color: #f5f5f5;
 }
 
-/* Links */
-a {
-    text-decoration: none;
-    color: #4caf50;
-}
-
-a.btn,
-a.btn-secondary {
+/* Estilos para botones */
+.btn {
     display: inline-block;
-    margin-top: 10px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-edit {
+    background-color: #4CAF50;
+    color: white;
+    margin-right: 5px;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-new {
+    background-color: #28a745;
+    color: white;
+    margin-top: 20px;
+    font-size: 16px;
     padding: 10px 20px;
-    border-radius: 5px;
+}
+
+.acciones {
+    white-space: nowrap;
+}
+
+/* Estilos para el formulario de edición */
+.editar-form {
+    background-color: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.editar-form h2 {
+    color: #333;
+    margin-bottom: 30px;
     text-align: center;
-    color: #fff;
+    font-size: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #495057;
     font-weight: bold;
-    transition: background-color 0.3s;
 }
 
-a.btn {
-    background-color: #4caf50;
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
 }
 
-a.btn-secondary {
-    background-color: #888;
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
 }
 
-a.btn:hover {
-    background-color: #45a049;
+.form-actions {
+    margin-top: 30px;
+    text-align: center;
 }
 
-a.btn-secondary:hover {
-    background-color: #666;
+.btn-actualizar {
+    background-color: #4CAF50;
+    color: white;
+    margin-right: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-    .container {
-        padding: 15px;
-    }
+.btn-cancelar {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+}
 
-    table th,
-    table td {
-        padding: 8px;
-    }
+.no-results {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+    font-style: italic;
 }

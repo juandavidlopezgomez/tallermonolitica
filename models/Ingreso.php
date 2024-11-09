@@ -207,5 +207,31 @@ class Ingreso {
             return false;
         }
     }
+    // En models/Ingreso.php, añadir este método:
+
+public function actualizarIngreso($datos) {
+    if (!$this->validarClavesForaneas($datos[':idPrograma'], $datos[':idSala'], $datos[':idResponsable'])) {
+        return false;
+    }
+
+    try {
+        $sql = "UPDATE ingresos SET 
+                codigoEstudiante = :codigoEstudiante,
+                nombreEstudiante = :nombreEstudiante,
+                idPrograma = :idPrograma,
+                idSala = :idSala,
+                idResponsable = :idResponsable,
+                fechaIngreso = :fechaIngreso,
+                horaIngreso = :horaIngreso,
+                horaSalida = :horaSalida
+                WHERE id = :id";
+        
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($datos);
+    } catch (PDOException $e) {
+        echo "Error al actualizar el ingreso: " . $e->getMessage();
+        return false;
+    }
+}
 }
 ?>
