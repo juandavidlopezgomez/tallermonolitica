@@ -13,7 +13,7 @@
         <?php endif; ?>
 
         <form method="POST" action="?controller=ingresos&action=modificar">
-            <input type="hidden" name="id" value="<?php echo $datos['id']; ?>">
+            <input type="hidden" name="id" value="<?php echo htmlspecialchars($datos['id']); ?>">
             
             <div class="form-group">
                 <label>Código Estudiante:</label>
@@ -50,18 +50,6 @@
                 <label>Hora de Salida:</label>
                 <input type="text" value="<?php echo htmlspecialchars($datos['horaSalida']); ?>" readonly>
             </div>
-
-            <div class="form-group">
-                <label>Fecha de Creación:</label>
-                <input type="text" value="<?php echo htmlspecialchars($datos['fecha_creacion']); ?>" readonly>
-            </div>
-
-            <?php if (!empty($datos['fecha_modificacion'])): ?>
-            <div class="form-group">
-                <label>Última Modificación:</label>
-                <input type="text" value="<?php echo htmlspecialchars($datos['fecha_modificacion']); ?>" readonly>
-            </div>
-            <?php endif; ?>
 
             <button type="submit" class="btn">Guardar Cambios</button>
             <a href="?controller=ingresos&action=listar" class="btn btn-secondary">Cancelar</a>

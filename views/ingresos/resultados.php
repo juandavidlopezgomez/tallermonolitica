@@ -1,11 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Resultados de la Consulta</title>
     <link rel="stylesheet" href="css/styles.css">
-
 </head>
 <body>
     <div class="container">
@@ -44,3 +42,4 @@
     </div>
 </body>
 </html>
+
