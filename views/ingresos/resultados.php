@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Resultados de la Consulta</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
+
 </head>
 <body>
     <div class="container">
