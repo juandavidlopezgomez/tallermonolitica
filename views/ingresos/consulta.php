@@ -1,46 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Consulta de Ingresos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .form-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: inline-block;
-            width: 120px;
-        }
-        input[type="date"], select {
-            padding: 5px;
-            margin: 5px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="form-container">
+    <div class="container">
         <h2>Consulta por Rango de Fechas</h2>
         <form method="POST" action="?controller=consultas&action=buscarPorFecha">
             <div class="form-group">
@@ -51,7 +18,7 @@
                 <label>Fecha Fin:</label>
                 <input type="date" name="fecha_fin" required>
             </div>
-            <button type="submit">Buscar</button>
+            <button type="submit" class="btn">Buscar</button>
         </form>
 
         <h2>Filtrar por:</h2>
@@ -71,7 +38,7 @@
                 <label>Valor:</label>
                 <input type="text" name="valor" required>
             </div>
-            <button type="submit">Filtrar</button>
+            <button type="submit" class="btn">Filtrar</button>
         </form>
     </div>
 </body>
