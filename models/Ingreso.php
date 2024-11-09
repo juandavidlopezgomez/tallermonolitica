@@ -207,7 +207,7 @@ class Ingreso {
             return false;
         }
     }
-    // En models/Ingreso.php, añadir este método:
+  
 
 public function actualizarIngreso($datos) {
     if (!$this->validarClavesForaneas($datos[':idPrograma'], $datos[':idSala'], $datos[':idResponsable'])) {

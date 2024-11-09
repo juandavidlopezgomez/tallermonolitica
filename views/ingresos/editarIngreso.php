@@ -1,4 +1,4 @@
-<!-- Modal de Mensajes -->
+
 <div id="messageModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
@@ -7,9 +7,9 @@
 </div>
 
 <style>
-/* Estilos del modal */
+
 .modal {
-    display: none; /* Oculto por defecto */
+    display: none; /
     position: fixed;
     z-index: 1;
     left: 0;
@@ -46,18 +46,18 @@
 </style>
 
 <script>
-// Función para mostrar el modal con un mensaje específico
+
 function showModal(message) {
     document.getElementById("modalMessage").innerText = message;
     document.getElementById("messageModal").style.display = "block";
 }
 
-// Cerrar el modal cuando el usuario haga clic en la "x"
+
 document.querySelector(".close").onclick = function() {
     document.getElementById("messageModal").style.display = "none";
 };
 
-// Cerrar el modal si el usuario hace clic fuera del contenido del modal
+/
 window.onclick = function(event) {
     if (event.target == document.getElementById("messageModal")) {
         document.getElementById("messageModal").style.display = "none";
