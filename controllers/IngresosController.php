@@ -11,7 +11,10 @@ class IngresosController {
                 ':nombreEstudiante' => trim($_POST['nombre']),
                 ':idPrograma' => trim($_POST['idPrograma']),
                 ':idSala' => trim($_POST['idSala']),
-                ':idResponsable' => trim($_POST['idResponsable'])
+                ':idResponsable' => trim($_POST['idResponsable']),
+                ':fechaIngreso' => trim($_POST['fechaIngreso']),
+                ':horaIngreso' => trim($_POST['horaIngreso']),
+                ':horaSalida' => trim($_POST['horaSalida'])
             ];
 
             if ($ingreso->registrarIngreso($datos)) {
@@ -28,7 +31,7 @@ class IngresosController {
         $ingreso = new Ingreso();
         $ingresosDelDia = $ingreso->obtenerIngresosDelDia();
 
-        require __DIR__ . '/../views/ingresos/listar.php';
+        require __DIR__ . '/../views/ingresos/lista.php';
     }
 }
 ?>

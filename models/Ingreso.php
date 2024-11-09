@@ -19,10 +19,15 @@ class Ingreso {
             return false;
         }
 
-        $sql = "INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, idSala, idResponsable, fechaIngreso)
-                VALUES (:codigoEstudiante, :nombreEstudiante, :idPrograma, :idSala, :idResponsable, NOW())";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute($datos);
+        try {
+            $sql = "INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, idSala, idResponsable, fechaIngreso, horaIngreso, horaSalida)
+                    VALUES (:codigoEstudiante, :nombreEstudiante, :idPrograma, :idSala, :idResponsable, :fechaIngreso, :horaIngreso, :horaSalida)";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute($datos);
+        } catch (PDOException $e) {
+            echo "Error al registrar el ingreso: " . $e->getMessage();
+            return false;
+        }
     }
 
     private function validarClavesForaneas($idPrograma, $idSala, $idResponsable) {
@@ -50,23 +55,121 @@ class Ingreso {
         return $stmt->fetchColumn() > 0;
     }
 
-    // Método nuevo para obtener los ingresos del día
     public function obtenerIngresosDelDia() {
-        $sql = "SELECT i.*, 
-                p.nombre as nombre_programa,
-                s.nombre as nombre_sala,
-                r.nombre as nombre_responsable
-                FROM ingresos i
-                LEFT JOIN programas p ON i.idPrograma = p.id
-                LEFT JOIN salas s ON i.idSala = s.id
-                LEFT JOIN responsables r ON i.idResponsable = r.id
-                WHERE DATE(i.fechaIngreso) = CURDATE() 
-                ORDER BY i.fechaIngreso DESC";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $sql = "SELECT i.*, 
+                    p.nombre as nombre_programa,
+                    s.nombre as nombre_sala,
+                    r.nombre as nombre_responsable
+                    FROM ingresos i
+                    LEFT JOIN programas p ON i.idPrograma = p.id
+                    LEFT JOIN salas s ON i.idSala = s.id
+                    LEFT JOIN responsables r ON i.idResponsable = r.id
+                    WHERE DATE(i.fechaIngreso) = CURDATE() 
+                    ORDER BY i.fechaIngreso DESC";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error al obtener los ingresos: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    public function buscarPorRangoFecha($fechaInicio, $fechaFin) {
+        try {
+            $sql = "SELECT i.*, 
+                    p.nombre as nombre_programa,
+                    s.nombre as nombre_sala,
+                    r.nombre as nombre_responsable
+                    FROM ingresos i
+                    LEFT JOIN programas p ON i.idPrograma = p.id
+                    LEFT JOIN salas s ON i.idSala = s.id
+                    LEFT JOIN responsables r ON i.idResponsable = r.id
+                    WHERE DATE(i.fechaIngreso) BETWEEN :fechaInicio AND :fechaFin
+                    ORDER BY i.fechaIngreso DESC";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                ':fechaInicio' => $fechaInicio,
+                ':fechaFin' => $fechaFin
+            ]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error al buscar por rango de fecha: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    public function filtrar($filtro, $valor) {
+        try {
+            $sql = "SELECT i.*, 
+                    p.nombre as nombre_programa,
+                    s.nombre as nombre_sala,
+                    r.nombre as nombre_responsable
+                    FROM ingresos i
+                    LEFT JOIN programas p ON i.idPrograma = p.id
+                    LEFT JOIN salas s ON i.idSala = s.id
+                    LEFT JOIN responsables r ON i.idResponsable = r.id
+                    WHERE ";
+
+            switch($filtro) {
+                case 'codigo':
+                    $sql .= "i.codigoEstudiante LIKE :valor";
+                    break;
+                case 'nombre':
+                    $sql .= "i.nombreEstudiante LIKE :valor";
+                    break;
+                case 'programa':
+                    $sql .= "p.nombre LIKE :valor";
+                    break;
+                case 'sala':
+                    $sql .= "s.nombre LIKE :valor";
+                    break;
+                default:
+                    $sql .= "1=1";
+            }
+            
+            $sql .= " ORDER BY i.fechaIngreso DESC";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':valor' => "%$valor%"]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error al filtrar registros: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    public function obtenerProgramas() {
+        try {
+            $stmt = $this->db->query("SELECT id, nombre FROM programas ORDER BY nombre");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error al obtener programas: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    public function obtenerSalas() {
+        try {
+            $stmt = $this->db->query("SELECT id, nombre FROM salas ORDER BY nombre");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error al obtener salas: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    public function obtenerResponsables() {
+        try {
+            $stmt = $this->db->query("SELECT id, nombre FROM responsables ORDER BY nombre");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error al obtener responsables: " . $e->getMessage();
+            return [];
+        }
     }
 }
 ?>
