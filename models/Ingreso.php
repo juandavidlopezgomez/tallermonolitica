@@ -55,7 +55,7 @@ class Ingreso {
         return $stmt->fetchColumn() > 0;
     }
 
-    public function obtenerIngresosDelDia() {
+    public function obtenerTodosLosIngresos() {
         try {
             $sql = "SELECT i.*, 
                     p.nombre as nombre_programa,
@@ -65,8 +65,7 @@ class Ingreso {
                     LEFT JOIN programas p ON i.idPrograma = p.id
                     LEFT JOIN salas s ON i.idSala = s.id
                     LEFT JOIN responsables r ON i.idResponsable = r.id
-                    WHERE DATE(i.fechaIngreso) = CURDATE() 
-                    ORDER BY i.fechaIngreso DESC";
+                    ORDER BY i.fechaIngreso DESC, i.horaIngreso DESC";
             
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
@@ -75,6 +74,11 @@ class Ingreso {
             echo "Error al obtener los ingresos: " . $e->getMessage();
             return [];
         }
+    }
+
+    // Este método ahora usa obtenerTodosLosIngresos
+    public function obtenerIngresosDelDia() {
+        return $this->obtenerTodosLosIngresos();
     }
 
     public function buscarPorRangoFecha($fechaInicio, $fechaFin) {
@@ -88,7 +92,7 @@ class Ingreso {
                     LEFT JOIN salas s ON i.idSala = s.id
                     LEFT JOIN responsables r ON i.idResponsable = r.id
                     WHERE DATE(i.fechaIngreso) BETWEEN :fechaInicio AND :fechaFin
-                    ORDER BY i.fechaIngreso DESC";
+                    ORDER BY i.fechaIngreso DESC, i.horaIngreso DESC";
             
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
@@ -131,7 +135,7 @@ class Ingreso {
                     $sql .= "1=1";
             }
             
-            $sql .= " ORDER BY i.fechaIngreso DESC";
+            $sql .= " ORDER BY i.fechaIngreso DESC, i.horaIngreso DESC";
             
             $stmt = $this->db->prepare($sql);
             $stmt->execute([':valor' => "%$valor%"]);
@@ -169,6 +173,38 @@ class Ingreso {
         } catch (PDOException $e) {
             echo "Error al obtener responsables: " . $e->getMessage();
             return [];
+        }
+    }
+
+    public function obtenerDetalleIngreso($id) {
+        try {
+            $sql = "SELECT i.*, 
+                    p.nombre as nombre_programa,
+                    s.nombre as nombre_sala,
+                    r.nombre as nombre_responsable
+                    FROM ingresos i
+                    LEFT JOIN programas p ON i.idPrograma = p.id
+                    LEFT JOIN salas s ON i.idSala = s.id
+                    LEFT JOIN responsables r ON i.idResponsable = r.id
+                    WHERE i.id = :id";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id' => $id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error al obtener detalle del ingreso: " . $e->getMessage();
+            return null;
+        }
+    }
+
+    public function eliminarIngreso($id) {
+        try {
+            $sql = "DELETE FROM ingresos WHERE id = :id";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([':id' => $id]);
+        } catch (PDOException $e) {
+            echo "Error al eliminar el ingreso: " . $e->getMessage();
+            return false;
         }
     }
 }

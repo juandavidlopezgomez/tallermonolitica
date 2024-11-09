@@ -39,11 +39,16 @@
         .add-link:hover {
             background-color: #45a049;
         }
+        .total-registros {
+            margin-top: 10px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
-    <h2>Listado de Ingresos del Día</h2>
+    <h2>Listado de Todos los Ingresos</h2>
     <?php if (!empty($ingresosDelDia)): ?>
+        <p class="total-registros">Total de registros: <?php echo count($ingresosDelDia); ?></p>
         <table>
             <tr>
                 <th>Código Estudiante</th>
@@ -69,7 +74,7 @@
             <?php endforeach; ?>
         </table>
     <?php else: ?>
-        <p>No hay ingresos registrados para el día de hoy.</p>
+        <p>No hay ingresos registrados en la base de datos.</p>
     <?php endif; ?>
 
     <br>
