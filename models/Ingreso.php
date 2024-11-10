@@ -1,40 +1,56 @@
 <?php
-require_once __DIR__ . '/../config/conexion.php';
-
 class Ingreso {
     private $db;
 
     public function __construct() {
-        $conexion = new Conexion();
-        $this->db = $conexion->getConnection();
+        $this->db = new PDO('mysql:host=localhost;dbname=ingresos_salas_db', 'root', '');
     }
 
-    public function registrarIngreso($datos) {
+    public function registrar($data) {
         try {
-            $sql = "INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, idSala, idResponsable, fechaIngreso, horaIngreso, horaSalida)
-                    VALUES (:codigoEstudiante, :nombreEstudiante, :idPrograma, :idSala, :idResponsable, :fechaIngreso, :horaIngreso, :horaSalida)";
+            $sql = "INSERT INTO ingresos (codigo, nombre, programa, fechaIngreso, horaIngreso, idSala, responsable) 
+                    VALUES (:codigo, :nombre, :programa, :fechaIngreso, :horaIngreso, :idSala, :responsable)";
             $stmt = $this->db->prepare($sql);
-            return $stmt->execute($datos);
+            $stmt->execute($data);
+            return true;
         } catch (PDOException $e) {
-            echo "Error al registrar el ingreso: " . $e->getMessage();
+            echo "Error al registrar ingreso: " . $e->getMessage();
             return false;
         }
     }
 
-    public function obtenerIngresosDelDia() {
+    public function listarPorFecha($fecha) {
         try {
-            $sql = "SELECT i.*, p.nombre as nombre_programa, s.nombre as nombre_sala, r.nombre as nombre_responsable
-                    FROM ingresos i
-                    LEFT JOIN programas p ON i.idPrograma = p.id
-                    LEFT JOIN salas s ON i.idSala = s.id
-                    LEFT JOIN responsables r ON i.idResponsable = r.id
-                    WHERE DATE(i.fechaIngreso) = CURDATE()
-                    ORDER BY i.horaIngreso";
-            
-            $stmt = $this->db->query($sql);
+            $sql = "SELECT * FROM ingresos WHERE fechaIngreso = :fecha";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':fecha' => $fecha]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            echo "Error al obtener ingresos del día: " . $e->getMessage();
+            echo "Error al listar ingresos del día: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    public function buscarPorRangoFecha($fechaInicio, $fechaFin) {
+        try {
+            $sql = "SELECT * FROM ingresos WHERE fechaIngreso BETWEEN :fechaInicio AND :fechaFin";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':fechaInicio' => $fechaInicio, ':fechaFin' => $fechaFin]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error al buscar por rango de fechas: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    public function filtrar($filtro, $valor) {
+        try {
+            $sql = "SELECT * FROM ingresos WHERE $filtro LIKE :valor";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':valor' => "%$valor%"]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error al filtrar los ingresos: " . $e->getMessage();
             return [];
         }
     }

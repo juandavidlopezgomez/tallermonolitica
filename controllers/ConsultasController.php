@@ -23,7 +23,7 @@ class ConsultasController {
             require __DIR__ . '/../views/ingresos/consulta.php';
         }
     }
-    
+
     public function filtrar() {
         $filtro = $_GET['filtro'] ?? '';
         $valor = $_GET['valor'] ?? '';

@@ -1,18 +1,15 @@
 <?php
-require_once __DIR__ . '/../config/conexion.php';
-
 class Horario {
     private $db;
 
     public function __construct() {
-        $conexion = new Conexion();
-        $this->db = $conexion->getConnection();
+        $this->db = new PDO('mysql:host=localhost;dbname=ingresos_salas_db', 'root', '');
     }
 
     public function verificarDisponibilidad($idSala, $fecha, $horaInicio, $horaFin) {
         try {
-            $sql = "SELECT COUNT(*) FROM horarios WHERE idSala = :idSala 
-                    AND fecha = :fecha 
+            $sql = "SELECT COUNT(*) FROM horarios_salas WHERE idSala = :idSala 
+                    AND dia = :fecha 
                     AND (horaInicio < :horaFin AND horaFin > :horaInicio)";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
