@@ -138,5 +138,9 @@ class IngresosController {
     public function obtenerPorId($id) {
         return $this->ingresoModel->obtenerIngresoPorId($id);
     }
+    public function actualizarIngreso($id, $codigoEstudiante, $nombreEstudiante) {
+        return $this->ingresoModel->modificarIngreso($id, $codigoEstudiante, $nombreEstudiante);
+    }
     
+
 }

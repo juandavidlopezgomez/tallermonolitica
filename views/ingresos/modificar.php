@@ -2,15 +2,35 @@
 require_once __DIR__ . '/../../controllers/IngresosController.php';
 session_start();
 
+$controller = new IngresosController();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = $_POST['id'];
+    $codigoEstudiante = $_POST['codigoEstudiante'];
+    $nombreEstudiante = $_POST['nombreEstudiante'];
+
+    // Realizar la actualización
+    $resultado = $controller->actualizarIngreso($id, $codigoEstudiante, $nombreEstudiante);
+
+    // Mensaje de éxito o error
+    if ($resultado) {
+        $_SESSION['mensaje'] = "Modificación exitosa";
+    } else {
+        $_SESSION['mensaje'] = "Error al modificar";
+    }
+
+    // Redirecciona para mostrar el mensaje
+    header('Location: modificar.php?id=' . $id);
+    exit;
+}
+
 if (!isset($_GET['id'])) {
     $_SESSION['error'] = "ID de ingreso no proporcionado";
     header('Location: lista.php');
     exit;
 }
 
-$controller = new IngresosController();
 $ingreso = $controller->obtenerPorId($_GET['id']);
-
 if (!$ingreso) {
     $_SESSION['error'] = "Ingreso no encontrado";
     header('Location: lista.php');
@@ -27,12 +47,7 @@ if (!$ingreso) {
 </head>
 <body>
     <h1>Modificar Ingreso</h1>
-
-    <nav>
-        <a href="../menu_principal.php">Volver al Menú Principal</a>
-    </nav>
-
-    <form method="POST" action="../../public/actualizar.php">
+    <form method="POST" action="modificar.php">
         <input type="hidden" name="id" value="<?php echo $ingreso['id']; ?>">
         
         <div>
@@ -45,14 +60,22 @@ if (!$ingreso) {
             <input type="text" id="nombreEstudiante" name="nombreEstudiante" value="<?php echo htmlspecialchars($ingreso['nombreEstudiante']); ?>" required>
         </div>
 
-        <div>
-            <label for="horaSalida">Hora de Salida:</label>
-            <input type="time" id="horaSalida" name="horaSalida" value="<?php echo htmlspecialchars($ingreso['horaSalida']); ?>">
-        </div>
-
         <button type="submit">Guardar Cambios</button>
     </form>
+
+    <!-- Ventana emergente para mensajes -->
+    <?php if (isset($_SESSION['mensaje'])): ?>
+        <div class="popup">
+            <p><?php echo $_SESSION['mensaje']; unset($_SESSION['mensaje']); ?></p>
+            <button onclick="cerrarPopup()">Cerrar</button>
+        </div>
+    <?php endif; ?>
 </body>
+<script>
+    function cerrarPopup() {
+        document.querySelector('.popup').style.display = 'none';
+    }
+</script>
 </html>
 
 
