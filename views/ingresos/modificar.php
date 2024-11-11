@@ -27,8 +27,8 @@ if (!$ingreso) {
     <h1>Modificar Ingreso</h1>
     
     <nav>
-        <a href="lista.php">Volver a la Lista</a>
-    </nav>
+    <a href="../index.php">Volver al Menú Principal</a>
+</nav>
 
     <?php if (isset($_SESSION['error'])): ?>
         <div class="alert error"><?php echo $_SESSION['error']; unset($_SESSION['error']); ?></div>

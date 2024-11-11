@@ -38,5 +38,11 @@ class ConsultasController {
         $ingresos = $this->ingresoModel->buscarPorFiltros($filtros);
         require_once __DIR__ . '/../views/ingresos/resultados.php';
     }
+
+    public function obtenerProgramas()
+{
+    $programaModel = new Programa();
+    return $programaModel->obtenerTodos();
+}
 }
 ?>
