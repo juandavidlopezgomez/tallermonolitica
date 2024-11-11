@@ -25,7 +25,7 @@ class IngresosController {
     } 
 
     public function registrarIngreso($codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso) { 
-        $retries = 3; // Número de reintentos
+        $retries = 3; 
         $success = false;
         
         while ($retries > 0 && !$success) {
@@ -33,11 +33,9 @@ class IngresosController {
                 $stmt = $this->db->prepare("INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, idSala, idResponsable, fechaIngreso, horaIngreso, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
                 $success = $stmt->execute([$codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso]);
             } catch (PDOException $e) {
-                // Log el error
                 error_log("Error al registrar ingreso: " . $e->getMessage());
                 $retries--;
                 if ($retries == 0) {
-                    // Aquí puedes manejar el error, por ejemplo, lanzando una excepción o mostrando un mensaje al usuario
                     return false;
                 }
             }
@@ -45,6 +43,7 @@ class IngresosController {
         
         return $success; 
     } 
+
 
     public function index() { 
         return $this->ingresoModel->obtenerIngresosPorFecha(date('Y-m-d')); 
@@ -136,7 +135,8 @@ class IngresosController {
         exit; 
     } 
 
-    public function obtenerPorId($id) { 
-        return $this->ingresoModel->obtenerIngresoPorId($id); 
-    } 
+    public function obtenerPorId($id) {
+        return $this->ingresoModel->obtenerIngresoPorId($id);
+    }
+    
 }
