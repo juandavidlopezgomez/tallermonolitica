@@ -1,41 +1,76 @@
 <?php
 // controllers/IngresosController.php
 
-require_once __DIR__ . '/../models/Ingreso.php';
+// controllers/IngresosController.php
+
+require_once '../models/Programa.php';
+require_once '../models/Responsable.php';
+require_once '../models/Sala.php';
+require_once '../models/Horario.php';
+require_once '../models/Ingreso.php';
 
 class IngresosController {
-    private $model;
+
+    private $programaModel;
+    private $responsableModel;
+    private $salaModel;
+    private $horarioModel;
+    private $ingresoModel;
 
     public function __construct() {
-        $this->model = new Ingreso();
+        // Instanciar los modelos de cada tabla
+        $this->programaModel = new Programa();
+        $this->responsableModel = new Responsable();
+        $this->salaModel = new Sala();
+        $this->horarioModel = new Horario();
+        $this->ingresoModel = new Ingreso();
     }
 
-    // Método para listar todos los ingresos
-    public function listar() {
-        return $this->model->obtenerTodos();
+    public function crear() {
+        // Obtener listas de programas, responsables y salas
+        $programas = $this->programaModel->obtenerTodos();
+        $responsables = $this->responsableModel->obtenerTodos();
+        $salas = $this->salaModel->obtenerTodos();
+    
+        // Cargar la vista y pasarle los datos
+        require '../views/ingresos/crear.php';
     }
+    
+    // Método para almacenar el registro en la base de datos
+    public function store($data) {
+        // Validar los datos básicos
+        $codigoEstudiante = $data['codigoEstudiante'];
+        $nombreEstudiante = $data['nombreEstudiante'];
+        $idPrograma = $data['programa'];
+        $fechaIngreso = $data['fechaIngreso'];
+        $horaIngreso = $data['horaIngreso'] . ' ' . $data['periodoIngreso'];
+        $idSala = $data['sala'];
+        $idResponsable = $data['responsable'];
+        
+        // Convertir hora a formato de 24 horas (AM/PM)
+        $horaIngreso = date("H:i:s", strtotime($horaIngreso));
 
-    // Método para crear un nuevo ingreso
-    public function crear($data) {
-        $this->model->crear($data);
-        header("Location: /views/ingresos/lista.php"); // Redirige a la lista de ingresos
-    }
+        // Verificar si la sala está disponible
+        if (!$this->horarioModel->salaDisponible($idSala, $fechaIngreso, $horaIngreso)) {
+            echo "Error: La sala no está disponible en este horario.";
+            return;
+        }
 
-    // Método para obtener un ingreso por su ID (para ver o editar)
-    public function obtenerIngreso($id) {
-        return $this->model->obtenerPorId($id);
-    }
+        // Crear el registro de ingreso
+        $exito = $this->ingresoModel->crearIngreso(
+            $codigoEstudiante,
+            $nombreEstudiante,
+            $idPrograma,
+            $fechaIngreso,
+            $horaIngreso,
+            $idSala,
+            $idResponsable
+        );
 
-    // Método para actualizar un ingreso existente
-    public function actualizar($id, $data) {
-        $this->model->actualizar($id, $data);
-        header("Location: /views/ingresos/lista.php"); // Redirige a la lista de ingresos
-    }
-
-    // Método para eliminar un ingreso
-    public function eliminar($id) {
-        $this->model->eliminar($id);
-        header("Location: /views/ingresos/lista.php"); // Redirige a la lista de ingresos
+        if ($exito) {
+            echo "Ingreso registrado exitosamente.";
+        } else {
+            echo "Error: No se pudo registrar el ingreso.";
+        }
     }
 }
-?>

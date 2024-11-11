@@ -3,18 +3,18 @@
 require_once __DIR__ . '/../controllers/IngresosController.php';
 
 $controller = new IngresosController();
-$ingresos = $controller->listar();
+$ingresosHoy = $controller->listarHoy();
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Ingresos</title>
+    <title>Ingresos de Hoy</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <h1>Ingresos a las Salas</h1>
+    <h1>Ingresos a las Salas - Hoy</h1>
     <a href="../views/ingresos/crear.php">Registrar Ingreso</a>
     <table>
         <tr>
@@ -26,7 +26,7 @@ $ingresos = $controller->listar();
             <th>Hora de Ingreso</th>
             <th>Acciones</th>
         </tr>
-        <?php foreach ($ingresos as $ingreso): ?>
+        <?php foreach ($ingresosHoy as $ingreso): ?>
             <tr>
                 <td><?= $ingreso['id'] ?></td>
                 <td><?= $ingreso['codigoEstudiante'] ?></td>

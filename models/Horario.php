@@ -25,5 +25,17 @@ class Horario {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    // models/Horario.php
+// models/Horario.php
+public function salaDisponible($idSala, $fechaIngreso, $horaIngreso) {
+    $sql = "SELECT * FROM horarios_salas 
+            WHERE idSala = :idSala 
+            AND fechaIngreso = :fechaIngreso 
+            AND :horaIngreso BETWEEN horaInicio AND horaFin";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([':idSala' => $idSala, ':fechaIngreso' => $fechaIngreso, ':horaIngreso' => $horaIngreso]);
+    return $stmt->rowCount() == 0; // True if no class is scheduled
+}
+
 }
 ?>

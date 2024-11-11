@@ -6,10 +6,9 @@ class Programa {
     private $conn;
 
     public function __construct() {
-        $this->conn = (new Conexion())->conectar();
+        $this->conn = Conexion::conectar();
     }
 
-    // Obtener todos los programas
     public function obtenerTodos() {
         $sql = "SELECT * FROM programas";
         $stmt = $this->conn->prepare($sql);
@@ -17,5 +16,3 @@ class Programa {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
-?>
-
