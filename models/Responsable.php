@@ -1,25 +1,21 @@
 <?php
+// models/Responsable.php
 require_once __DIR__ . '/../config/conexion.php';
 
 class Responsable {
-    private $conexion;
+    private $conn;
 
     public function __construct() {
-        $this->conexion = Conexion::getInstance()->getConexion();
+        $this->conn = (new Conexion())->conectar();
     }
 
+    // Obtener todos los responsables
     public function obtenerTodos() {
-        $query = "SELECT * FROM responsables";
-        $stmt = $this->conexion->prepare($query);
+        $sql = "SELECT * FROM responsables";
+        $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function obtenerPorId($id) {
-        $query = "SELECT * FROM responsables WHERE id = ?";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
 }
 ?>
+

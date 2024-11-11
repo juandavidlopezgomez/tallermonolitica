@@ -1,34 +1,29 @@
 <?php
+// models/Horario.php
 require_once __DIR__ . '/../config/conexion.php';
 
 class Horario {
-    private $conexion;
+    private $conn;
 
     public function __construct() {
-        $this->conexion = Conexion::getInstance()->getConexion();
+        $this->conn = (new Conexion())->conectar();
     }
 
-    public function obtenerHorarioSala($idSala, $dia) {
-        $query = "SELECT * FROM horarios_salas WHERE idSala = ? AND dia = ?";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->execute([$idSala, $dia]);
+    // Obtener todos los horarios de salas
+    public function obtenerTodos() {
+        $sql = "SELECT * FROM horarios_salas";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function salaDisponible($idSala, $dia, $hora) {
-        $query = "SELECT * FROM horarios_salas 
-                 WHERE idSala = ? AND dia = ? 
-                 AND ? BETWEEN horaInicio AND horaFin";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->execute([$idSala, $dia, $hora]);
-        return $stmt->rowCount() === 0;
-    }
-
-    public function agregarHorario($dia, $materia, $horaInicio, $horaFin, $idPrograma, $idSala) {
-        $query = "INSERT INTO horarios_salas (dia, materia, horaInicio, horaFin, idPrograma, idSala) 
-                 VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $this->conexion->prepare($query);
-        return $stmt->execute([$dia, $materia, $horaInicio, $horaFin, $idPrograma, $idSala]);
+    // Obtener horario por sala
+    public function obtenerPorSala($idSala) {
+        $sql = "SELECT * FROM horarios_salas WHERE idSala = :idSala";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':idSala', $idSala);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

@@ -1,32 +1,26 @@
 <?php
+// config/conexion.php
 class Conexion {
-    private static $instance = null;
-    private $conexion;
+    private $host = "localhost";
+    private $dbname = "ingresos_salas_db";
+    private $username = "root";
+    private $password = "";
+    public $conn;
 
-    private function __construct() {
+    // Cambia a public para permitir instancias de esta clase
+    public function __construct() {
+        $this->conectar();
+    }
+
+    public function conectar() {
+        $this->conn = null;
         try {
-            $this->conexion = new PDO(
-                "mysql:host=localhost;dbname=ingresos_salas_db",
-                "root",
-                "",
-                array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
-            );
-            $this->conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
+            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->dbname, $this->username, $this->password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch(PDOException $e) {
             echo "Error de conexión: " . $e->getMessage();
-            exit;
         }
-    }
-
-    public static function getInstance() {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    public function getConexion() {
-        return $this->conexion;
+        return $this->conn;
     }
 }
 ?>
