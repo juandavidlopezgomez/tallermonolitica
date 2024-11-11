@@ -14,6 +14,9 @@
     --text-color: #202124;
     --background-color: #f8f9fa;
     --border-color: #dadce0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --hover-color: #e2ebfa;
+    --table-hover-color: #f2f2f2;
 }
 
 /* Estilos generales */
@@ -22,32 +25,46 @@ body {
     line-height: 1.6;
     color: var(--text-color);
     background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
 }
 
-.container {
+/* Contenedor de toda la pantalla */
+.fullscreen-container {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 /* Header */
 header {
     text-align: center;
-    margin-bottom: 30px;
     padding: 20px;
-    background-color: white;
+    background-color: var(--primary-color);
+    color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px var(--shadow-color);
 }
 
 header h1 {
-    color: var(--primary-color);
+    font-size: 2.5rem;
     margin-bottom: 10px;
 }
 
 header h2 {
-    color: var(--secondary-color);
+    font-size: 1.5rem;
     font-weight: normal;
+    color: var(--secondary-color);
 }
 
 /* Navegación */
@@ -68,8 +85,8 @@ header h2 {
     background-color: var(--primary-color);
     color: white;
     text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
 .main-nav a:hover {
@@ -81,73 +98,69 @@ main {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--shadow-color);
 }
 
-/* Tablas */
-.table-container {
-    overflow-x: auto;
-    margin-top: 20px;
+/* Vistas específicas */
+.compact-container {
+    max-width: 400px;
+    margin: auto;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-}
-
-th {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-tr:nth-child(even) {
-    background-color: var(--background-color);
+.halfscreen-container {
+    width: 60%;
+    margin: auto;
 }
 
 /* Formularios */
 form {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.form-group {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 label {
-    display: block;
-    margin-bottom: 5px;
+    font-weight: bold;
     color: var(--text-color);
 }
 
-input[type="text"],
-input[type="date"],
-select {
+input[type="text"], input[type="date"], input[type="time"], select, textarea {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
+    font-size: 1em;
+    transition: border 0.2s ease-in-out;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
 }
 
 button, .btn {
-    padding: 10px 20px;
+    padding: 12px 24px;
     background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
 }
 
 button:hover, .btn:hover {
     background-color: var(--secondary-color);
+}
+
+button:disabled, .btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 /* Botones específicos */
@@ -157,92 +170,93 @@ button:hover, .btn:hover {
 
 .btn-modificar {
     background-color: var(--secondary-color);
-    color: white;
-    text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+}
+
+/* Estilos de tabla */
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
     font-size: 0.9em;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: var(--table-hover-color);
+}
+
+tr:hover {
+    background-color: var(--hover-color);
 }
 
 /* Alertas */
 .alert {
     padding: 15px;
-    margin-bottom: 20px;
     border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
 }
 
 .success {
     background-color: var(--success-color);
-    color: white;
 }
 
 .error {
     background-color: var(--error-color);
-    color: white;
 }
 
 /* Mensaje sin registros */
 .no-records {
     text-align: center;
-    padding: 20px;
     color: #666;
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    margin-top: 30px;
     padding: 20px;
-    color: #666;
+    font-size: 1.1em;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-
-    .main-nav ul {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .main-nav a {
-        width: 100%;
-        text-align: center;
-    }
-
-    th, td {
-        padding: 8px;
-    }
-
-
-}
-
+/* Popup */
 .popup {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #ffffff;
+    background-color: white;
     border: 2px solid var(--primary-color);
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 1000;
+    width: 300px;
     text-align: center;
 }
 
 .popup p {
     margin-bottom: 15px;
+    color: var(--text-color);
 }
 
 .popup button {
-    background-color: var(--primary-color);
-    color: #fff;
-    border: none;
     padding: 10px 20px;
     border-radius: 5px;
+    background-color: var(--primary-color);
+    color: white;
     cursor: pointer;
 }
 
@@ -250,3 +264,28 @@ footer {
     background-color: var(--secondary-color);
 }
 
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: white;
+    color: #666;
+    margin-top: auto;
+    width: 100%;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Responsive diseño */
+@media (max-width: 768px) {
+    .fullscreen-container, .halfscreen-container, .compact-container {
+        width: 90%;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    header h2 {
+        font-size: 1.2rem;
+    }
+}

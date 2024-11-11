@@ -10,7 +10,7 @@ $ingresos = $controller->index();
 <head>
     <meta charset="UTF-8">
     <title>Lista de Ingresos</title>
-    <link rel="stylesheet" href="/public/css/styles.css">
+    <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
     <h1>Ingresos del Día</h1>
