@@ -39,7 +39,7 @@ class IngresosController {
     public function obtenerPorId($id) {
         return $this->ingresoModel->obtenerPorId($id);
     }
-
+    
     private function validarHorarioAtencion($diaActual, $horaActual) {
         // Convertir día a español
         $diasSemana = [
@@ -175,17 +175,6 @@ class IngresosController {
             return false;
         }
     }
-
-    public function obtenerProgramas() {
-        return $this->programaModel->obtenerTodos();
-    }
-
-    public function obtenerSalas() {
-        return $this->salaModel->obtenerTodas();
-    }
-
-    public function obtenerResponsables() {
-        return $this->responsableModel->obtenerTodos();
-    }
 }
 ?>
+

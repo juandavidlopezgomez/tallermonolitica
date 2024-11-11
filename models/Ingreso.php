@@ -88,5 +88,17 @@ class Ingreso {
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function obtenerPorId($id) {
+        $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
+                FROM ingresos i
+                JOIN programas p ON i.idPrograma = p.id
+                JOIN salas s ON i.idSala = s.id
+                JOIN responsables r ON i.idResponsable = r.id
+                WHERE i.id = ?";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>
