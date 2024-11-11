@@ -1,9 +1,11 @@
 <?php
+
 require_once __DIR__ . '/../models/Ingreso.php';
 require_once __DIR__ . '/../models/Horario.php';
 require_once __DIR__ . '/../models/Programa.php';
 require_once __DIR__ . '/../models/Sala.php';
 require_once __DIR__ . '/../models/Responsable.php';
+require_once __DIR__ . '/../config/conexion.php'; // Asegúrate de incluir la conexión
 
 class IngresosController {
     private $ingresoModel;
@@ -11,13 +13,20 @@ class IngresosController {
     private $programaModel;
     private $salaModel;
     private $responsableModel;
+    private $db; // Propiedad para la conexión de la base de datos
 
     public function __construct() {
+        $this->db = Conexion::getInstance()->getConexion(); // Inicializa la conexión
         $this->ingresoModel = new Ingreso();
         $this->horarioModel = new Horario();
         $this->programaModel = new Programa();
         $this->salaModel = new Sala();
         $this->responsableModel = new Responsable();
+    }
+
+    public function registrarIngreso($codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso) {
+        $stmt = $this->db->prepare("INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, idSala, idResponsable, fechaIngreso, horaIngreso, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+        return $stmt->execute([$codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso]);
     }
 
     public function index() {
@@ -66,7 +75,7 @@ class IngresosController {
 
         if ($this->ingresoModel->registrarIngreso($datos)) {
             $_SESSION['success'] = "Ingreso registrado correctamente";
-            header('Location: ../views/ingresos/lista.php');
+            header('Location: ../public/index.php?mensaje=ingreso_registrado'); // Cambiado para redirigir a la carpeta public
             exit;
         } else {
             $_SESSION['error'] = "Error al registrar el ingreso";
@@ -113,13 +122,4 @@ class IngresosController {
     public function obtenerPorId($id) {
         return $this->ingresoModel->obtenerIngresoPorId($id);
     }
-    public function registrarIngreso($codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso) {
-        $stmt = $this->db->prepare("INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, idSala, idResponsable, fechaIngreso, horaIngreso, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
-        return $stmt->execute([$codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso]);
-    }
-    
-
-
-
 }
-?>
