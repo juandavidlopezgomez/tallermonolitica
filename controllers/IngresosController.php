@@ -36,76 +36,24 @@ class IngresosController {
         return $this->responsableModel->obtenerTodos();
     }
 
-    public function obtenerPorId($id) {
-        return $this->ingresoModel->obtenerPorId($id);
-    }
-    
-    private function validarHorarioAtencion($diaActual, $horaActual) {
-        // Convertir día a español
-        $diasSemana = [
-            'Sunday' => 'Domingo',
-            'Monday' => 'Lunes',
-            'Tuesday' => 'Martes',
-            'Wednesday' => 'Miércoles',
-            'Thursday' => 'Jueves',
-            'Friday' => 'Viernes',
-            'Saturday' => 'Sábado'
-        ];
-        
-        $dia = $diasSemana[$diaActual];
-        
-        // Convertir hora a objeto DateTime para comparación
-        $hora = DateTime::createFromFormat('H:i:s', $horaActual);
-        $horaInicio = DateTime::createFromFormat('H:i', '07:00');
-        $horaFinLV = DateTime::createFromFormat('H:i', '20:50');
-        $horaFinS = DateTime::createFromFormat('H:i', '16:30');
-        
-        // Verificar si es día hábil
-        if ($dia === 'Domingo') {
-            return false;
-        }
-        
-        // Verificar horarios según el día
-        if ($dia === 'Sábado') {
-            return $hora >= $horaInicio && $hora <= $horaFinS;
-        } else {
-            return $hora >= $horaInicio && $hora <= $horaFinLV;
-        }
-    }
-
     public function guardar() {
         session_start();
-        
-        // Obtener día y hora actual
-        $diaActual = date('l'); // Devuelve el nombre del día en inglés
+        $diaActual = date('l');
         $horaActual = date('H:i:s');
-        
-        // Validar horario de atención
+
         if (!$this->validarHorarioAtencion($diaActual, $horaActual)) {
             $_SESSION['error'] = "Fuera del horario de atención";
-            header('Location: views/ingresos/crear.php');
-            return false;
+            header('Location: ../views/ingresos/crear.php');
+            exit;
         }
 
-        // Validar disponibilidad de sala
-        $diasEspanol = [
-            'Monday' => 'Lunes',
-            'Tuesday' => 'Martes',
-            'Wednesday' => 'Miércoles',
-            'Thursday' => 'Jueves',
-            'Friday' => 'Viernes',
-            'Saturday' => 'Sábado'
-        ];
-        
-        $diaEspanol = $diasEspanol[$diaActual];
-        
+        $diaEspanol = $this->traducirDia($diaActual);
         if (!$this->horarioModel->salaDisponible($_POST['idSala'], $diaEspanol, $horaActual)) {
             $_SESSION['error'] = "La sala no está disponible en este momento";
-            header('Location: views/ingresos/crear.php');
-            return false;
+            header('Location: ../views/ingresos/crear.php');
+            exit;
         }
 
-        // Preparar datos para el registro
         $datos = [
             'codigoEstudiante' => $_POST['codigoEstudiante'],
             'nombreEstudiante' => $_POST['nombreEstudiante'],
@@ -116,34 +64,40 @@ class IngresosController {
             'idSala' => $_POST['idSala']
         ];
 
-        // Intentar registrar el ingreso
         if ($this->ingresoModel->registrarIngreso($datos)) {
             $_SESSION['success'] = "Ingreso registrado correctamente";
-            header('Location: views/ingresos/lista.php');
-            return true;
+            header('Location: ../views/ingresos/lista.php');
+            exit;
         } else {
             $_SESSION['error'] = "Error al registrar el ingreso";
-            header('Location: views/ingresos/crear.php');
-            return false;
+            header('Location: ../views/ingresos/crear.php');
+            exit;
         }
+    }
+
+    private function traducirDia($dia) {
+        $dias = [
+            'Sunday' => 'Domingo', 'Monday' => 'Lunes', 'Tuesday' => 'Martes',
+            'Wednesday' => 'Miércoles', 'Thursday' => 'Jueves', 'Friday' => 'Viernes',
+            'Saturday' => 'Sábado'
+        ];
+        return $dias[$dia];
     }
 
     public function registrarSalida() {
         session_start();
-        
+
         if (!isset($_POST['id'])) {
             $_SESSION['error'] = "ID de ingreso no proporcionado";
-            header('Location: views/ingresos/lista.php');
-            return false;
+            header('Location: ../views/ingresos/lista.php');
+            exit;
         }
 
         $horaSalida = date('H:i:s');
-        
-        // Validar que la salida sea en horario de atención
         if (!$this->validarHorarioAtencion(date('l'), $horaSalida)) {
             $_SESSION['error'] = "No se puede registrar salida fuera del horario de atención";
-            header('Location: views/ingresos/lista.php');
-            return false;
+            header('Location: ../views/ingresos/lista.php');
+            exit;
         }
 
         if ($this->ingresoModel->registrarSalida($_POST['id'], $horaSalida)) {
@@ -152,28 +106,17 @@ class IngresosController {
             $_SESSION['error'] = "Error al registrar la salida";
         }
 
-        header('Location: views/ingresos/lista.php');
-        return true;
+        header('Location: ../views/ingresos/lista.php');
+        exit;
     }
 
-    public function actualizar($id, $codigoEstudiante, $nombreEstudiante) {
-        session_start();
-        
-        // Validar que el ingreso existe
-        $ingreso = $this->ingresoModel->obtenerPorId($id);
-        if (!$ingreso) {
-            $_SESSION['error'] = "El ingreso no existe";
-            return false;
-        }
-
-        // Intentar modificar el ingreso
-        if ($this->ingresoModel->modificarIngreso($id, $codigoEstudiante, $nombreEstudiante)) {
-            $_SESSION['success'] = "Ingreso modificado correctamente";
-            return true;
-        } else {
-            $_SESSION['error'] = "Error al modificar el ingreso";
-            return false;
-        }
+    public function obtenerPorId($id) {
+        return $this->ingresoModel->obtenerIngresoPorId($id);
     }
+    public function registrarIngreso($codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso) {
+        $stmt = $this->db->prepare("INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, idSala, idResponsable, fechaIngreso, horaIngreso, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+        return $stmt->execute([$codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso]);
+    }
+    
 }
 ?>
