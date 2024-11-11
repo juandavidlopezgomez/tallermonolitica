@@ -8,12 +8,16 @@ class Ingreso {
         $this->conexion = Conexion::getInstance()->getConexion();
     }
 
-    public function registrarIngreso($datos) {
-        $query = "INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, 
-                 fechaIngreso, horaIngreso, idResponsable, idSala, created_at) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+    // models/Ingreso.php
+public function registrarIngreso($datos) {
+    $query = "INSERT INTO ingresos 
+              (codigoEstudiante, nombreEstudiante, idPrograma, fechaIngreso, 
+               horaIngreso, idResponsable, idSala, created_at) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+    
+    try {
         $stmt = $this->conexion->prepare($query);
-        return $stmt->execute([
+        $result = $stmt->execute([
             $datos['codigoEstudiante'],
             $datos['nombreEstudiante'],
             $datos['idPrograma'],
@@ -22,7 +26,14 @@ class Ingreso {
             $datos['idResponsable'],
             $datos['idSala']
         ]);
+
+        // Return success or failure
+        return $result;
+    } catch (PDOException $e) {
+        error_log("Error al registrar el ingreso: " . $e->getMessage());
+        return false;
     }
+}
 
     public function registrarSalida($id, $horaSalida) {
         $query = "UPDATE ingresos SET horaSalida = ? WHERE id = ?";
