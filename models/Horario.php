@@ -1,28 +1,34 @@
 <?php
+require_once __DIR__ . '/../config/conexion.php';
+
 class Horario {
-    private $db;
+    private $conexion;
 
     public function __construct() {
-        $this->db = new PDO('mysql:host=localhost;dbname=ingresos_salas_db', 'root', '');
+        $this->conexion = Conexion::getInstance()->getConexion();
     }
 
-    public function verificarDisponibilidad($idSala, $fecha, $horaInicio, $horaFin) {
-        try {
-            $sql = "SELECT COUNT(*) FROM horarios_salas WHERE idSala = :idSala 
-                    AND dia = :fecha 
-                    AND (horaInicio < :horaFin AND horaFin > :horaInicio)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([
-                ':idSala' => $idSala,
-                ':fecha' => $fecha,
-                ':horaInicio' => $horaInicio,
-                ':horaFin' => $horaFin
-            ]);
-            return $stmt->fetchColumn() == 0;
-        } catch (PDOException $e) {
-            echo "Error al verificar disponibilidad: " . $e->getMessage();
-            return false;
-        }
+    public function obtenerHorarioSala($idSala, $dia) {
+        $query = "SELECT * FROM horarios_salas WHERE idSala = ? AND dia = ?";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute([$idSala, $dia]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function salaDisponible($idSala, $dia, $hora) {
+        $query = "SELECT * FROM horarios_salas 
+                 WHERE idSala = ? AND dia = ? 
+                 AND ? BETWEEN horaInicio AND horaFin";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute([$idSala, $dia, $hora]);
+        return $stmt->rowCount() === 0;
+    }
+
+    public function agregarHorario($dia, $materia, $horaInicio, $horaFin, $idPrograma, $idSala) {
+        $query = "INSERT INTO horarios_salas (dia, materia, horaInicio, horaFin, idPrograma, idSala) 
+                 VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conexion->prepare($query);
+        return $stmt->execute([$dia, $materia, $horaInicio, $horaFin, $idPrograma, $idSala]);
     }
 }
 ?>

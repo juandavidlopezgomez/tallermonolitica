@@ -2,30 +2,24 @@
 require_once __DIR__ . '/../config/conexion.php';
 
 class Sala {
-    private $db;
+    private $conexion;
 
     public function __construct() {
-        $conexion = new Conexion();
-        $this->db = $conexion->getConnection();
+        $this->conexion = Conexion::getInstance()->getConexion();
     }
 
-    public function obtenerSalasDisponibles($fecha, $horaInicio, $horaFin) {
-        try {
-            $sql = "SELECT * FROM salas WHERE id NOT IN (
-                        SELECT idSala FROM horarios WHERE fecha = :fecha 
-                        AND (horaInicio < :horaFin AND horaFin > :horaInicio)
-                    )";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([
-                ':fecha' => $fecha,
-                ':horaInicio' => $horaInicio,
-                ':horaFin' => $horaFin
-            ]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error al obtener salas disponibles: " . $e->getMessage();
-            return [];
-        }
+    public function obtenerTodas() {
+        $query = "SELECT * FROM salas";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerPorId($id) {
+        $query = "SELECT * FROM salas WHERE id = ?";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 ?>
