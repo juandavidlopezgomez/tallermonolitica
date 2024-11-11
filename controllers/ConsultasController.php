@@ -39,10 +39,12 @@ class ConsultasController {
         require_once __DIR__ . '/../views/ingresos/resultados.php';
     }
 
-    public function obtenerProgramas()
-{
-    $programaModel = new Programa();
-    return $programaModel->obtenerTodos();
-}
+    public function obtenerProgramas() {
+        return $this->programaModel->obtenerTodos();
+    }
+
+    public function obtenerResponsables() {
+        return $this->responsableModel->obtenerTodos();
+    }
 }
 ?>
