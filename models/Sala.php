@@ -1,21 +1,25 @@
 <?php
-// models/Sala.php
 require_once __DIR__ . '/../config/conexion.php';
 
 class Sala {
-    private $conn;
+    private $conexion;
 
     public function __construct() {
-        $this->conn = (new Conexion())->conectar();
+        $this->conexion = Conexion::getInstance()->getConexion();
     }
 
-    // Obtener todas las salas
-    public function obtenerTodos() {
-        $sql = "SELECT * FROM salas";
-        $stmt = $this->conn->prepare($sql);
+    public function obtenerTodas() {
+        $query = "SELECT * FROM salas";
+        $stmt = $this->conexion->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function obtenerPorId($id) {
+        $query = "SELECT * FROM salas WHERE id = ?";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>
-

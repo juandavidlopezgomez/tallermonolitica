@@ -1,16 +1,21 @@
 <?php
-// views/ingresos/modificar.php
-
 require_once __DIR__ . '/../../controllers/IngresosController.php';
+session_start();
 
-$controller = new IngresosController();
-$ingreso = $controller->obtenerIngreso($_GET['id']);
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller->actualizar($_GET['id'], $_POST);
-    header("Location: lista.php"); // Redirige a la lista después de actualizar
+if (!isset($_GET['id'])) {
+    $_SESSION['error'] = "ID de ingreso no proporcionado";
+    header('Location: lista.php');
+    exit;
 }
 
+$controller = new IngresosController();
+$ingreso = $controller->obtenerPorId($_GET['id']);
+
+if (!$ingreso) {
+    $_SESSION['error'] = "Ingreso no encontrado";
+    header('Location: lista.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -18,32 +23,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Modificar Ingreso</title>
+    <link rel="stylesheet" href="/public/css/styles.css">
 </head>
 <body>
     <h1>Modificar Ingreso</h1>
-    <form action="modificar.php?id=<?= $ingreso['id'] ?>" method="POST">
-        <label for="codigoEstudiante">Código Estudiante:</label>
-        <input type="text" name="codigoEstudiante" value="<?= $ingreso['codigoEstudiante'] ?>" required>
+
+    <nav>
+        <a href="../menu_principal.php">Volver al Menú Principal</a>
+    </nav>
+
+    <form method="POST" action="../../public/actualizar.php">
+        <input type="hidden" name="id" value="<?php echo $ingreso['id']; ?>">
         
-        <label for="nombreEstudiante">Nombre Estudiante:</label>
-        <input type="text" name="nombreEstudiante" value="<?= $ingreso['nombreEstudiante'] ?>" required>
+        <div>
+            <label for="codigoEstudiante">Código Estudiante:</label>
+            <input type="text" id="codigoEstudiante" name="codigoEstudiante" value="<?php echo htmlspecialchars($ingreso['codigoEstudiante']); ?>" required>
+        </div>
         
-        <label for="idPrograma">Programa:</label>
-        <input type="number" name="idPrograma" value="<?= $ingreso['idPrograma'] ?>" required>
-        
-        <label for="fechaIngreso">Fecha de Ingreso:</label>
-        <input type="date" name="fechaIngreso" value="<?= $ingreso['fechaIngreso'] ?>" required>
-        
-        <label for="horaIngreso">Hora de Ingreso:</label>
-        <input type="time" name="horaIngreso" value="<?= $ingreso['horaIngreso'] ?>" required>
-        
-        <label for="idResponsable">Responsable:</label>
-        <input type="number" name="idResponsable" value="<?= $ingreso['idResponsable'] ?>" required>
-        
-        <label for="idSala">Sala:</label>
-        <input type="number" name="idSala" value="<?= $ingreso['idSala'] ?>" required>
-        
+        <div>
+            <label for="nombreEstudiante">Nombre Estudiante:</label>
+            <input type="text" id="nombreEstudiante" name="nombreEstudiante" value="<?php echo htmlspecialchars($ingreso['nombreEstudiante']); ?>" required>
+        </div>
+
+        <div>
+            <label for="horaSalida">Hora de Salida:</label>
+            <input type="time" id="horaSalida" name="horaSalida" value="<?php echo htmlspecialchars($ingreso['horaSalida']); ?>">
+        </div>
+
         <button type="submit">Guardar Cambios</button>
     </form>
 </body>
 </html>
+

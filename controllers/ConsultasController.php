@@ -1,34 +1,50 @@
 <?php
-// controllers/ConsultasController.php
-
+require_once __DIR__ . '/../models/Ingreso.php';
 require_once __DIR__ . '/../models/Programa.php';
 require_once __DIR__ . '/../models/Responsable.php';
-require_once __DIR__ . '/../models/Sala.php';
 
 class ConsultasController {
+    private $ingresoModel;
     private $programaModel;
     private $responsableModel;
-    private $salaModel;
 
     public function __construct() {
+        $this->ingresoModel = new Ingreso();
         $this->programaModel = new Programa();
         $this->responsableModel = new Responsable();
-        $this->salaModel = new Sala();
     }
 
-    // Obtener todos los programas
+    public function mostrarFormulario() {
+        $programas = $this->programaModel->obtenerTodos();
+        $responsables = $this->responsableModel->obtenerTodos();
+        require_once __DIR__ . '/../views/ingresos/consulta.php';
+    }
+
+    public function consultarPorRango() {
+        $fechaInicio = $_POST['fechaInicio'] ?? date('Y-m-d');
+        $fechaFin = $_POST['fechaFin'] ?? date('Y-m-d');
+        
+        $ingresos = $this->ingresoModel->obtenerIngresosPorRango($fechaInicio, $fechaFin);
+        require_once __DIR__ . '/../views/ingresos/resultados.php';
+    }
+
+    public function consultarPorFiltros() {
+        $filtros = [
+            'codigoEstudiante' => $_POST['codigoEstudiante'] ?? '',
+            'idPrograma' => $_POST['idPrograma'] ?? '',
+            'idResponsable' => $_POST['idResponsable'] ?? ''
+        ];
+        
+        $ingresos = $this->ingresoModel->buscarPorFiltros($filtros);
+        require_once __DIR__ . '/../views/ingresos/resultados.php';
+    }
+
     public function obtenerProgramas() {
         return $this->programaModel->obtenerTodos();
     }
 
-    // Obtener todos los responsables
     public function obtenerResponsables() {
         return $this->responsableModel->obtenerTodos();
-    }
-
-    // Obtener todas las salas
-    public function obtenerSalas() {
-        return $this->salaModel->obtenerTodos();
     }
 }
 ?>

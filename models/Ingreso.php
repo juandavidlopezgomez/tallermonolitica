@@ -1,97 +1,114 @@
 <?php
-// models/Ingreso.php
 require_once __DIR__ . '/../config/conexion.php';
 
 class Ingreso {
-    private $conn;
+    private $conexion;
 
     public function __construct() {
-        $this->conn = (new Conexion())->conectar();
+        $this->conexion = Conexion::getInstance()->getConexion();
     }
 
-    // Listar todos los ingresos de hoy
-    public function obtenerHoy() {
-        $sql = "SELECT * FROM ingresos WHERE DATE(fechaIngreso) = CURDATE()";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // Listar ingresos por rango de fechas
-    public function obtenerPorFecha($fechaInicio, $fechaFin) {
-        $sql = "SELECT * FROM ingresos WHERE fechaIngreso BETWEEN :fechaInicio AND :fechaFin";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([':fechaInicio' => $fechaInicio, ':fechaFin' => $fechaFin]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-   // models/Ingreso.php
-public function crear($data) {
-    $sql = "INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, fechaIngreso, horaIngreso, horaSalida, idResponsable, idSala, fechaCreacion) 
-            VALUES (:codigo, :nombre, :programa, :fechaIngreso, :horaIngreso, :horaSalida, :responsable, :sala, NOW())";
-    $stmt = $this->conn->prepare($sql);
-    $stmt->execute([
-        ':codigo' => $data['codigoEstudiante'],
-        ':nombre' => $data['nombreEstudiante'],
-        ':programa' => $data['idPrograma'],
-        ':fechaIngreso' => $data['fechaIngreso'],
-        ':horaIngreso' => $data['horaIngreso'],
-        ':horaSalida' => $data['horaSalida'],
-        ':responsable' => $data['idResponsable'],
-        ':sala' => $data['idSala']
-    ]);
-}
-
-
-
-    // Validar que el horario esté dentro del rango permitido
-    public function esHorarioValido($fechaIngreso, $horaIngreso) {
-        $dayOfWeek = date('N', strtotime($fechaIngreso));
-        $time = strtotime($horaIngreso);
-
-        $weekdayStart = strtotime("07:00");
-        $weekdayEnd = strtotime("20:50");
-        $saturdayStart = strtotime("07:00");
-        $saturdayEnd = strtotime("16:30");
-
-        if (($dayOfWeek >= 1 && $dayOfWeek <= 5 && $time >= $weekdayStart && $time <= $weekdayEnd) ||
-            ($dayOfWeek == 6 && $time >= $saturdayStart && $time <= $saturdayEnd)) {
-            return true;
-        }
-        return false;
-    }
-
-    // Obtener un ingreso por su ID
-    public function obtenerPorId($id) {
-        $sql = "SELECT * FROM ingresos WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // Actualizar un ingreso existente y registrar la fecha de modificación
-    public function actualizar($id, $data) {
-        $sql = "UPDATE ingresos SET codigoEstudiante = :codigo, nombreEstudiante = :nombre, idPrograma = :programa, fechaIngreso = :fecha, horaIngreso = :horaIngreso, idResponsable = :responsable, idSala = :sala, fechaModificacion = NOW() WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([
-            ':id' => $id,
-            ':codigo' => $data['codigoEstudiante'],
-            ':nombre' => $data['nombreEstudiante'],
-            ':programa' => $data['idPrograma'],
-            ':fecha' => $data['fechaIngreso'],
-            ':horaIngreso' => $data['horaIngreso'],
-            ':responsable' => $data['idResponsable'],
-            ':sala' => $data['idSala']
+    public function registrarIngreso($datos) {
+        $query = "INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, 
+                 fechaIngreso, horaIngreso, idResponsable, idSala, created_at) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+        $stmt = $this->conexion->prepare($query);
+        return $stmt->execute([
+            $datos['codigoEstudiante'],
+            $datos['nombreEstudiante'],
+            $datos['idPrograma'],
+            $datos['fechaIngreso'],
+            $datos['horaIngreso'],
+            $datos['idResponsable'],
+            $datos['idSala']
         ]);
     }
 
-    // Eliminar un ingreso por ID
-    public function eliminar($id) {
-        $sql = "DELETE FROM ingresos WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
+    public function registrarSalida($id, $horaSalida) {
+        $query = "UPDATE ingresos SET horaSalida = ? WHERE id = ?";
+        $stmt = $this->conexion->prepare($query);
+        return $stmt->execute([$horaSalida, $id]);
     }
+
+    public function obtenerIngresosPorFecha($fecha) {
+        $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
+                 FROM ingresos i 
+                 JOIN programas p ON i.idPrograma = p.id 
+                 JOIN salas s ON i.idSala = s.id 
+                 JOIN responsables r ON i.idResponsable = r.id 
+                 WHERE i.fechaIngreso = ?";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute([$fecha]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerIngresosPorRango($fechaInicio, $fechaFin) {
+        $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
+                 FROM ingresos i 
+                 JOIN programas p ON i.idPrograma = p.id 
+                 JOIN salas s ON i.idSala = s.id 
+                 JOIN responsables r ON i.idResponsable = r.id 
+                 WHERE i.fechaIngreso BETWEEN ? AND ?";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute([$fechaInicio, $fechaFin]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function modificarIngreso($id, $codigoEstudiante, $nombreEstudiante) {
+        $query = "UPDATE ingresos 
+                 SET codigoEstudiante = ?, nombreEstudiante = ?, updated_at = NOW() 
+                 WHERE id = ?";
+        $stmt = $this->conexion->prepare($query);
+        return $stmt->execute([$codigoEstudiante, $nombreEstudiante, $id]);
+    }
+
+    public function buscarPorFiltros($filtros) {
+        $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
+                 FROM ingresos i 
+                 JOIN programas p ON i.idPrograma = p.id 
+                 JOIN salas s ON i.idSala = s.id 
+                 JOIN responsables r ON i.idResponsable = r.id 
+                 WHERE 1=1";
+        $params = [];
+
+        if (!empty($filtros['codigoEstudiante'])) {
+            $query .= " AND i.codigoEstudiante = ?";
+            $params[] = $filtros['codigoEstudiante'];
+        }
+        if (!empty($filtros['idPrograma'])) {
+            $query .= " AND i.idPrograma = ?";
+            $params[] = $filtros['idPrograma'];
+        }
+        if (!empty($filtros['idResponsable'])) {
+            $query .= " AND i.idResponsable = ?";
+            $params[] = $filtros['idResponsable'];
+        }
+
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerPorId($id) {
+        $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
+                FROM ingresos i
+                JOIN programas p ON i.idPrograma = p.id
+                JOIN salas s ON i.idSala = s.id
+                JOIN responsables r ON i.idResponsable = r.id
+                WHERE i.id = ?";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function obtenerIngresoPorId($id) {
+        $sql = "SELECT * FROM ingresos WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    
 }
 ?>
+

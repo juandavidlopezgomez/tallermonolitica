@@ -1,76 +1,125 @@
 <?php
-// controllers/IngresosController.php
-
-// controllers/IngresosController.php
-
-require_once '../models/Programa.php';
-require_once '../models/Responsable.php';
-require_once '../models/Sala.php';
-require_once '../models/Horario.php';
-require_once '../models/Ingreso.php';
+require_once __DIR__ . '/../models/Ingreso.php';
+require_once __DIR__ . '/../models/Horario.php';
+require_once __DIR__ . '/../models/Programa.php';
+require_once __DIR__ . '/../models/Sala.php';
+require_once __DIR__ . '/../models/Responsable.php';
 
 class IngresosController {
-
-    private $programaModel;
-    private $responsableModel;
-    private $salaModel;
-    private $horarioModel;
     private $ingresoModel;
+    private $horarioModel;
+    private $programaModel;
+    private $salaModel;
+    private $responsableModel;
 
     public function __construct() {
-        // Instanciar los modelos de cada tabla
-        $this->programaModel = new Programa();
-        $this->responsableModel = new Responsable();
-        $this->salaModel = new Sala();
-        $this->horarioModel = new Horario();
         $this->ingresoModel = new Ingreso();
+        $this->horarioModel = new Horario();
+        $this->programaModel = new Programa();
+        $this->salaModel = new Sala();
+        $this->responsableModel = new Responsable();
     }
 
-    public function crear() {
-        // Obtener listas de programas, responsables y salas
-        $programas = $this->programaModel->obtenerTodos();
-        $responsables = $this->responsableModel->obtenerTodos();
-        $salas = $this->salaModel->obtenerTodos();
-    
-        // Cargar la vista y pasarle los datos
-        require '../views/ingresos/crear.php';
+    public function index() {
+        return $this->ingresoModel->obtenerIngresosPorFecha(date('Y-m-d'));
     }
-    
-    // Método para almacenar el registro en la base de datos
-    public function store($data) {
-        // Validar los datos básicos
-        $codigoEstudiante = $data['codigoEstudiante'];
-        $nombreEstudiante = $data['nombreEstudiante'];
-        $idPrograma = $data['programa'];
-        $fechaIngreso = $data['fechaIngreso'];
-        $horaIngreso = $data['horaIngreso'] . ' ' . $data['periodoIngreso'];
-        $idSala = $data['sala'];
-        $idResponsable = $data['responsable'];
-        
-        // Convertir hora a formato de 24 horas (AM/PM)
-        $horaIngreso = date("H:i:s", strtotime($horaIngreso));
 
-        // Verificar si la sala está disponible
-        if (!$this->horarioModel->salaDisponible($idSala, $fechaIngreso, $horaIngreso)) {
-            echo "Error: La sala no está disponible en este horario.";
-            return;
+    public function obtenerProgramas() {
+        return $this->programaModel->obtenerTodos();
+    }
+
+    public function obtenerSalas() {
+        return $this->salaModel->obtenerTodas();
+    }
+
+    public function obtenerResponsables() {
+        return $this->responsableModel->obtenerTodos();
+    }
+
+    public function guardar() {
+        session_start();
+        $diaActual = date('l');
+        $horaActual = date('H:i:s');
+
+        if (!$this->validarHorarioAtencion($diaActual, $horaActual)) {
+            $_SESSION['error'] = "Fuera del horario de atención";
+            header('Location: ../views/ingresos/crear.php');
+            exit;
         }
 
-        // Crear el registro de ingreso
-        $exito = $this->ingresoModel->crearIngreso(
-            $codigoEstudiante,
-            $nombreEstudiante,
-            $idPrograma,
-            $fechaIngreso,
-            $horaIngreso,
-            $idSala,
-            $idResponsable
-        );
+        $diaEspanol = $this->traducirDia($diaActual);
+        if (!$this->horarioModel->salaDisponible($_POST['idSala'], $diaEspanol, $horaActual)) {
+            $_SESSION['error'] = "La sala no está disponible en este momento";
+            header('Location: ../views/ingresos/crear.php');
+            exit;
+        }
 
-        if ($exito) {
-            echo "Ingreso registrado exitosamente.";
+        $datos = [
+            'codigoEstudiante' => $_POST['codigoEstudiante'],
+            'nombreEstudiante' => $_POST['nombreEstudiante'],
+            'idPrograma' => $_POST['idPrograma'],
+            'fechaIngreso' => date('Y-m-d'),
+            'horaIngreso' => $horaActual,
+            'idResponsable' => $_POST['idResponsable'],
+            'idSala' => $_POST['idSala']
+        ];
+
+        if ($this->ingresoModel->registrarIngreso($datos)) {
+            $_SESSION['success'] = "Ingreso registrado correctamente";
+            header('Location: ../views/ingresos/lista.php');
+            exit;
         } else {
-            echo "Error: No se pudo registrar el ingreso.";
+            $_SESSION['error'] = "Error al registrar el ingreso";
+            header('Location: ../views/ingresos/crear.php');
+            exit;
         }
     }
+
+    private function traducirDia($dia) {
+        $dias = [
+            'Sunday' => 'Domingo', 'Monday' => 'Lunes', 'Tuesday' => 'Martes',
+            'Wednesday' => 'Miércoles', 'Thursday' => 'Jueves', 'Friday' => 'Viernes',
+            'Saturday' => 'Sábado'
+        ];
+        return $dias[$dia];
+    }
+
+    public function registrarSalida() {
+        session_start();
+
+        if (!isset($_POST['id'])) {
+            $_SESSION['error'] = "ID de ingreso no proporcionado";
+            header('Location: ../views/ingresos/lista.php');
+            exit;
+        }
+
+        $horaSalida = date('H:i:s');
+        if (!$this->validarHorarioAtencion(date('l'), $horaSalida)) {
+            $_SESSION['error'] = "No se puede registrar salida fuera del horario de atención";
+            header('Location: ../views/ingresos/lista.php');
+            exit;
+        }
+
+        if ($this->ingresoModel->registrarSalida($_POST['id'], $horaSalida)) {
+            $_SESSION['success'] = "Salida registrada correctamente";
+        } else {
+            $_SESSION['error'] = "Error al registrar la salida";
+        }
+
+        header('Location: ../views/ingresos/lista.php');
+        exit;
+    }
+
+    public function obtenerPorId($id) {
+        return $this->ingresoModel->obtenerIngresoPorId($id);
+    }
+    public function registrarIngreso($codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso) {
+        $stmt = $this->db->prepare("INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, idSala, idResponsable, fechaIngreso, horaIngreso, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+        return $stmt->execute([$codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso]);
+    }
+    
+
+
+
 }
+?>
