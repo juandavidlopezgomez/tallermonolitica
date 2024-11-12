@@ -17,9 +17,8 @@ $responsables = $controller->obtenerResponsables();
     <h1>Consulta de Ingresos</h1>
     
     <nav>
-    <a href="../index.php">Volver al Menú Principal</a>
-</nav>
-
+        <a href="../../public/index.php">Volver al Menú Principal</a>
+    </nav>
 
     <h2>Consulta por Rango de Fechas</h2>
     <form method="POST" action="resultados.php">
