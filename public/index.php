@@ -30,7 +30,7 @@ $ingresos = $controller->index();
         <main>
             <section class="ingresos-actuales">
                 <h2>Ingresos del Día</h2>
-                
+
                 <?php if (isset($_SESSION['success'])): ?>
                     <div class="alert success"><?php echo $_SESSION['success']; unset($_SESSION['success']); ?></div>
                 <?php endif; ?>
@@ -76,8 +76,7 @@ $ingresos = $controller->index();
                                         </td>
                                         <td><?php echo htmlspecialchars($ingreso['responsable']); ?></td>
                                         <td>
-                                            <a href="../views/ingresos/modificar.php?id=<?php echo $ingreso['id']; ?>" 
-                                               class="btn-modificar">Modificar</a>
+                                            <a href="../views/ingresos/modificar.php?id=<?php echo $ingreso['id']; ?>" class="btn-modificar">Modificar</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

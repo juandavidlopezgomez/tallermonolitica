@@ -1,11 +1,10 @@
 <?php 
-
 require_once __DIR__ . '/../models/Ingreso.php'; 
 require_once __DIR__ . '/../models/Horario.php'; 
 require_once __DIR__ . '/../models/Programa.php'; 
 require_once __DIR__ . '/../models/Sala.php'; 
 require_once __DIR__ . '/../models/Responsable.php'; 
-require_once __DIR__ . '/../config/conexion.php'; // Asegúrate de incluir la conexión 
+require_once __DIR__ . '/../config/conexion.php';
 
 class IngresosController { 
     private $ingresoModel; 
@@ -13,10 +12,10 @@ class IngresosController {
     private $programaModel; 
     private $salaModel; 
     private $responsableModel; 
-    private $db; // Propiedad para la conexión de la base de datos 
+    private $db; 
 
     public function __construct() { 
-        $this->db = Conexion::getInstance()->getConexion(); // Inicializa la conexión 
+        $this->db = Conexion::getInstance()->getConexion(); 
         $this->ingresoModel = new Ingreso(); 
         $this->horarioModel = new Horario(); 
         $this->programaModel = new Programa(); 
@@ -24,29 +23,10 @@ class IngresosController {
         $this->responsableModel = new Responsable(); 
     } 
 
-    public function registrarIngreso($codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso) { 
-        $retries = 3; 
-        $success = false;
-        
-        while ($retries > 0 && !$success) {
-            try {
-                $stmt = $this->db->prepare("INSERT INTO ingresos (codigoEstudiante, nombreEstudiante, idPrograma, idSala, idResponsable, fechaIngreso, horaIngreso, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
-                $success = $stmt->execute([$codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso]);
-            } catch (PDOException $e) {
-                error_log("Error al registrar ingreso: " . $e->getMessage());
-                $retries--;
-                if ($retries == 0) {
-                    return false;
-                }
-            }
-        }
-        
-        return $success; 
-    } 
-
-
+    // Obtiene todos los ingresos del día actual
     public function index() { 
-        return $this->ingresoModel->obtenerIngresosPorFecha(date('Y-m-d')); 
+        $fechaActual = date('Y-m-d');
+        return $this->ingresoModel->obtenerIngresosPorFecha($fechaActual); 
     } 
 
     public function obtenerProgramas() { 
@@ -60,6 +40,7 @@ class IngresosController {
     public function obtenerResponsables() { 
         return $this->responsableModel->obtenerTodos(); 
     } 
+
 
     public function guardar() { 
         session_start(); 

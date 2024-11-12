@@ -43,7 +43,7 @@ if (!$ingreso) {
 <head>
     <meta charset="UTF-8">
     <title>Modificar Ingreso</title>
-    <link rel="stylesheet" href="/public/css/styles.css">
+    <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
     <h1>Modificar Ingreso</h1>
