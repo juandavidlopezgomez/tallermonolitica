@@ -14,13 +14,14 @@ class Horario {
         $stmt->execute([$idSala, $dia]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function salaDisponible($idSala, $dia, $hora) {
         $query = "SELECT * FROM horarios_salas 
-                  WHERE idSala = ? AND dia = ? 
-                  AND ? BETWEEN horaInicio AND horaFin"; 
+                 WHERE idSala = ? AND dia = ? 
+                 AND ? BETWEEN horaInicio AND horaFin";
         $stmt = $this->conexion->prepare($query);
         $stmt->execute([$idSala, $dia, $hora]);
-        return $stmt->rowCount() === 0; // Si no hay registros, la sala está disponible
+        return $stmt->rowCount() === 0;
     }
 
     public function agregarHorario($dia, $materia, $horaInicio, $horaFin, $idPrograma, $idSala) {

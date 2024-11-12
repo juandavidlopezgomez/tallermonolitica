@@ -8,21 +8,7 @@ class Ingreso {
         $this->conexion = Conexion::getInstance()->getConexion();
     }
 
-    // Método para obtener los ingresos del día
-    public function obtenerIngresosPorFecha($fecha) {
-        $query = "SELECT i.*, p.nombre AS programa, s.nombre AS sala, r.nombre AS responsable 
-                  FROM ingresos i 
-                  JOIN programas p ON i.idPrograma = p.id 
-                  JOIN salas s ON i.idSala = s.id 
-                  JOIN responsables r ON i.idResponsable = r.id 
-                  WHERE i.fechaIngreso = ?";
-        
-        $stmt = $this->conexion->prepare($query);
-        $stmt->execute([$fecha]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // Método para registrar un nuevo ingreso
+    // Método para registrar un ingreso
     public function registrarIngreso($datos) {
         $query = "INSERT INTO ingresos 
                   (codigoEstudiante, nombreEstudiante, idPrograma, fechaIngreso, 
@@ -41,6 +27,7 @@ class Ingreso {
                 $datos['idSala']
             ]);
 
+            // Return success or failure
             return $result;
         } catch (PDOException $e) {
             error_log("Error al registrar el ingreso: " . $e->getMessage());
@@ -54,6 +41,19 @@ class Ingreso {
         $stmt = $this->conexion->prepare($query);
         return $stmt->execute([$horaSalida, $id]);
     }
+
+    public function obtenerIngresosPorFecha($fecha) {
+        $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
+                  FROM ingresos i 
+                  JOIN programas p ON i.idPrograma = p.id 
+                  JOIN salas s ON i.idSala = s.id 
+                  JOIN responsables r ON i.idResponsable = r.id 
+                  WHERE i.fechaIngreso = ?";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute([$fecha]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
 
     // Método para obtener ingresos por rango de fechas
     public function obtenerIngresosPorRango($fechaInicio, $fechaFin) {
@@ -105,7 +105,6 @@ class Ingreso {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Método para obtener un ingreso por ID
     public function obtenerIngresoPorId($id) {
         $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
                   FROM ingresos i
@@ -117,5 +116,7 @@ class Ingreso {
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-}
+    
+    
 
+}

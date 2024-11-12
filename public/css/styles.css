@@ -215,7 +215,37 @@ footer {
     th, td {
         padding: 8px;
     }
+
+
 }
 
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    text-align: center;
+}
 
+.popup p {
+    margin-bottom: 15px;
+}
 
+.popup button {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.popup button:hover {
+    background-color: var(--secondary-color);
+}

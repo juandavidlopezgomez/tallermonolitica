@@ -35,20 +35,4 @@ class ConsultasController {
     public function obtenerSalas() {
         return $this->salaModel->obtenerTodas();
     }
-
-    // controllers/ConsultasController.php
-
-// controllers/ConsultasController.php
-
-public function consultarPorRango($fechaInicio, $fechaFin) {
-    $resultados = $this->ingresoModel->obtenerIngresosPorRango($fechaInicio, $fechaFin);
-    error_log("Resultados obtenidos: " . print_r($resultados, true)); // Log para debug
-    return $resultados;
-}
-
-
-public function consultarPorFiltros($filtros) {
-    return $this->ingresoModel->buscarPorFiltros($filtros);
-}
-
 }
