@@ -24,6 +24,10 @@ $ingresos = $controller->index();
         <div class="alert success"><?php echo $_SESSION['success']; unset($_SESSION['success']); ?></div>
     <?php endif; ?>
 
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert error"><?php echo $_SESSION['error']; unset($_SESSION['error']); ?></div>
+    <?php endif; ?>
+
     <table>
         <thead>
             <tr>
@@ -49,7 +53,8 @@ $ingresos = $controller->index();
                         <?php if ($ingreso['horaSalida']): ?>
                             <?php echo htmlspecialchars($ingreso['horaSalida']); ?>
                         <?php else: ?>
-                            <form method="POST" action="registrar_salida.php">
+                            <form method="POST" action="../../public/registrar_salida.php">
+
                                 <input type="hidden" name="id" value="<?php echo $ingreso['id']; ?>">
                                 <button type="submit">Registrar Salida</button>
                             </form>

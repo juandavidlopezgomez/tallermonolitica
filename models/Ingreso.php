@@ -117,6 +117,14 @@ class Ingreso {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    
+    // archivo: models/Ingreso.php
+
+public function actualizarHoraSalida($id) {
+    $sql = "UPDATE ingresos SET horaSalida = NOW() WHERE id = :id";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    return $stmt->execute();
+}
+
 
 }

@@ -15,6 +15,7 @@ $salas = $controller->obtenerSalas();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Nuevo Ingreso</title>
     <link rel="stylesheet" href="../../public/css/styles.css">
+
 </head>
 <body>
     <div class="container">
