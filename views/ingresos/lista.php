@@ -54,7 +54,6 @@ $ingresos = $controller->index();
                             <?php echo htmlspecialchars($ingreso['horaSalida']); ?>
                         <?php else: ?>
                             <form method="POST" action="../../public/registrar_salida.php">
-
                                 <input type="hidden" name="id" value="<?php echo $ingreso['id']; ?>">
                                 <button type="submit">Registrar Salida</button>
                             </form>

@@ -35,13 +35,12 @@ class Ingreso {
         }
     }
 
-    // Método para registrar la salida de un ingreso
     public function registrarSalida($id, $horaSalida) {
         $query = "UPDATE ingresos SET horaSalida = ? WHERE id = ?";
         $stmt = $this->conexion->prepare($query);
         return $stmt->execute([$horaSalida, $id]);
     }
-
+    
     public function obtenerIngresosPorFecha($fecha) {
         $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
                   FROM ingresos i 

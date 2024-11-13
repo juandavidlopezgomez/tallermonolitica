@@ -15,15 +15,15 @@ class IngresosController {
     private $responsableModel; 
     private $db; // Propiedad para la conexión de la base de datos 
 
-    public function __construct() { 
-        $this->db = Conexion::getInstance()->getConexion(); // Inicializa la conexión 
-        $this->ingresoModel = new Ingreso(); 
-        $this->horarioModel = new Horario(); 
-        $this->programaModel = new Programa(); 
-        $this->salaModel = new Sala(); 
-        $this->responsableModel = new Responsable(); 
-    } 
-
+    public function __construct() {
+        $this->db = Conexion::getInstance()->getConexion(); // Usar Singleton para obtener la conexión
+        $this->ingresoModel = new Ingreso();
+        $this->horarioModel = new Horario();
+        $this->programaModel = new Programa();
+        $this->salaModel = new Sala();
+        $this->responsableModel = new Responsable();
+    }
+    
     public function registrarIngreso($codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso) { 
         $retries = 3; 
         $success = false;
@@ -44,7 +44,6 @@ class IngresosController {
         return $success; 
     } 
 
-
     public function index() { 
         return $this->ingresoModel->obtenerIngresosPorFecha(date('Y-m-d')); 
     } 
@@ -61,44 +60,57 @@ class IngresosController {
         return $this->responsableModel->obtenerTodos(); 
     } 
 
-    public function guardar() { 
-        session_start(); 
-        $diaActual = date('l'); 
-        $horaActual = date('H:i:s'); 
+    public function guardar() {
+        session_start();
+        
+        // Obtener el día y la hora actuales
+        $diaActual = date('l'); // Obtiene el día de la semana en inglés (e.g., "Sunday")
+        $horaActual = date('H:i:s'); // Hora actual en formato 24h
 
-        if (!$this->validarHorarioAtencion($diaActual, $horaActual)) { 
-            $_SESSION['error'] = "Fuera del horario de atención"; 
-            header('Location: ../views/ingresos/crear.php'); 
-            exit; 
-        } 
-
+    
+        // Validar que no sea domingo
+        if ($diaActual === 'Sunday') {
+            echo "<script>alert('Día no permitido para registro de ingresos.'); window.location.href = '../views/ingresos/crear.php';</script>";
+            exit;
+        }
+    
+        // Validar que esté en horario permitido (por ejemplo, entre 08:00 y 18:00)
+        $horaInicioPermitida = '08:00:00';
+        $horaFinPermitida = '18:00:00';
+        
+        if ($horaActual < $horaInicioPermitida || $horaActual > $horaFinPermitida) {
+            echo "<script>alert('Hora no permitida para registro de ingresos.'); window.location.href = '../views/ingresos/crear.php';</script>";
+            exit;
+        }
+    
+        // Verificar la disponibilidad de la sala en el horario
         $diaEspanol = $this->traducirDia($diaActual); 
         if (!$this->horarioModel->salaDisponible($_POST['idSala'], $diaEspanol, $horaActual)) { 
-            $_SESSION['error'] = "La sala no está disponible en este momento"; 
-            header('Location: ../views/ingresos/crear.php'); 
+            echo "<script>alert('La sala no está disponible en este momento'); window.location.href = '../views/ingresos/crear.php';</script>";
             exit; 
         } 
-
-        $datos = [ 
+    
+        // Preparar los datos del ingreso
+        $datos = [
             'codigoEstudiante' => $_POST['codigoEstudiante'], 
             'nombreEstudiante' => $_POST['nombreEstudiante'], 
             'idPrograma' => $_POST['idPrograma'], 
             'fechaIngreso' => date('Y-m-d'), 
             'horaIngreso' => $horaActual, 
             'idResponsable' => $_POST['idResponsable'], 
-            'idSala' => $_POST['idSala'] 
-        ]; 
-
-        if ($this->registrarIngreso($datos['codigoEstudiante'], $datos['nombreEstudiante'], $datos['idPrograma'], $datos['idSala'], $datos['idResponsable'], $datos['fechaIngreso'], $datos['horaIngreso'])) { 
-            $_SESSION['success'] = "Ingreso registrado correctamente"; 
-            header('Location: ../public/index.php?mensaje=ingreso_registrado'); // ```php
-            exit; 
-        } else { 
-            $_SESSION['error'] = "Error al registrar el ingreso"; 
-            header('Location: ../views/ingresos/crear.php'); 
-            exit; 
-        } 
-    } 
+            'idSala' => $_POST['idSala']
+        ];
+    
+        // Intentar registrar el ingreso
+        if ($this->registrarIngreso($datos['codigoEstudiante'], $datos['nombreEstudiante'], $datos['idPrograma'], $datos['idSala'], $datos['idResponsable'], $datos['fechaIngreso'], $datos['horaIngreso'])) {
+            echo "<script>alert('Ingreso registrado correctamente'); window.location.href = '../public/index.php?mensaje=ingreso_registrado';</script>";
+            exit;
+        } else {
+            echo "<script>alert('Error al registrar el ingreso'); window.location.href = '../views/ingresos/crear.php';</script>";
+            exit;
+        }
+    }
+    
 
     private function traducirDia($dia) { 
         $dias = [ 
@@ -109,38 +121,22 @@ class IngresosController {
         return $dias[$dia]; 
     } 
 
-    public function registrarSalida() { 
-        session_start(); 
+    // Método para registrar la salida de un ingreso
+    public function registrarSalida($id) {
+        $conexion = Conexion::getInstance()->getConexion(); // Usar Singleton
 
-        if (!isset($_POST['id'])) { 
-            $_SESSION['error'] = "ID de ingreso no proporcionado"; 
-            header('Location: ../views/ingresos/lista.php'); 
-            exit; 
-        } 
+        $sql = "UPDATE ingresos SET horaSalida = NOW() WHERE id = :id AND horaSalida IS NULL";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
-        $horaSalida = date('H:i:s'); 
-        if (!$this->validarHorarioAtencion(date('l'), $horaSalida)) { 
-            $_SESSION['error'] = "No se puede registrar salida fuera del horario de atención"; 
-            header('Location: ../views/ingresos/lista.php'); 
-            exit; 
-        } 
-
-        if ($this->ingresoModel->registrarSalida($_POST['id'], $horaSalida)) { 
-            $_SESSION['success'] = "Salida registrada correctamente"; 
-        } else { 
-            $_SESSION['error'] = "Error al registrar la salida"; 
-        } 
-
-        header('Location: ../views/ingresos/lista.php'); 
-        exit; 
-    } 
+        return $stmt->execute();
+    }
 
     public function obtenerPorId($id) {
         return $this->ingresoModel->obtenerIngresoPorId($id);
     }
+
     public function actualizarIngreso($id, $codigoEstudiante, $nombreEstudiante) {
         return $this->ingresoModel->modificarIngreso($id, $codigoEstudiante, $nombreEstudiante);
     }
-    
-
 }

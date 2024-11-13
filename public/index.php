@@ -12,8 +12,6 @@ $ingresos = $controller->index();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Control de Ingresos</title>
     <link rel="stylesheet" href="css/styles.css?v=1">
-
-
 </head>
 <body>
     <div class="container">
@@ -70,10 +68,11 @@ $ingresos = $controller->index();
                                             <?php if ($ingreso['horaSalida']): ?>
                                                 <?php echo htmlspecialchars($ingreso['horaSalida']); ?>
                                             <?php else: ?>
-                                                <form method="POST" action="../views/ingresos/registrar_salida.php">
-                                                    <input type="hidden" name="id" value="<?php echo $ingreso['id']; ?>">
-                                                    <button type="submit" class="btn-salida">Registrar Salida</button>
-                                                </form>
+                                                <form method="POST" action="../public/registrar_salida.php">
+                                                <input type="hidden" name="id" value="<?php echo $ingreso['id']; ?>">
+                                                <button type="submit" class="btn-salida">Registrar Salida</button>
+                                                 </form>
+
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo htmlspecialchars($ingreso['responsable']); ?></td>
