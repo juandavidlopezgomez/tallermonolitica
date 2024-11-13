@@ -6,9 +6,8 @@ $ingresosController = new IngresosController($conn);
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    // Aquí deberías implementar la lógica para eliminar el ingreso
-    // Por ejemplo, podrías agregar un método en IngresosController para manejar la eliminación
-    // $ingresosController->eliminarIngreso($id);
+    //no se implemento porq no se pedia
+   
     header("Location: lista.php");
 }
 ?>

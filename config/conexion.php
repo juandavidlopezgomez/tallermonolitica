@@ -20,7 +20,7 @@ class Conexion {
 
     public static function getInstance() {
         if (!self::$instance) {
-            error_log("Creando nueva instancia de Conexion"); // Agrega este registro para depuración
+            error_log("Creando nueva instancia de Conexion"); 
             self::$instance = new self();
         }
         return self::$instance;

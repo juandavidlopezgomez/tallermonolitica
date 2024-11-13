@@ -1,6 +1,6 @@
 <?php 
 
-date_default_timezone_set('America/Mexico_City'); // Cambia a la zona horaria correcta
+date_default_timezone_set('America/Mexico_City'); 
 require_once __DIR__ . '/../models/Ingreso.php'; 
 require_once __DIR__ . '/../models/Horario.php'; 
 require_once __DIR__ . '/../models/Programa.php'; 
@@ -14,17 +14,17 @@ class IngresosController {
     private $programaModel; 
     private $salaModel; 
     private $responsableModel; 
-    private $db; // Propiedad para la conexión de la base de datos 
+    private $db; 
 
     public function __construct() {
-        $this->db = Conexion::getInstance()->getConexion(); // Usar Singleton para obtener la conexión
+        $this->db = Conexion::getInstance()->getConexion(); 
         $this->ingresoModel = new Ingreso();
         $this->horarioModel = new Horario();
         $this->programaModel = new Programa();
         $this->salaModel = new Sala();
         $this->responsableModel = new Responsable();
     
-        // Registro de depuración para la conexión
+        
         error_log("Conexión a la base de datos establecida correctamente.");
     }
     
@@ -49,11 +49,11 @@ class IngresosController {
     }
 
     public function index($fecha = null) {
-        // Usa la fecha actual si no se proporciona otra fecha
+       
         $fecha = $fecha ?? date('Y-m-d');
         error_log("Consultando ingresos para la fecha: " . $fecha);
         
-        // Llamada al modelo para obtener ingresos por fecha
+      
         return $this->ingresoModel->obtenerIngresosPorFecha($fecha);
     }
 
@@ -72,9 +72,9 @@ class IngresosController {
     public function guardar() {
         session_start();
         
-        // Obtener el día y la hora actuales
-        $diaActual = date('l'); // Obtiene el día de la semana en inglés (e.g., "Sunday")
-        $horaActual = date('H:i:s'); // Hora actual en formato 24h
+        
+        $diaActual = date('l'); 
+        $horaActual = date('H:i:s');
 
         // Validar que no sea domingo
         if ($diaActual === 'Sunday') {
@@ -82,7 +82,7 @@ class IngresosController {
             exit;
         }
     
-        // Validar que esté en horario permitido (por ejemplo, entre 08:00 y 18:00)
+        // Validar que esté en horario permitido 
         $horaInicioPermitida = '08:00:00';
         $horaFinPermitida = '18:00:00';
         
@@ -98,7 +98,7 @@ class IngresosController {
             exit; 
         } 
     
-        // Preparar los datos del ingreso
+       
         $datos = [
             'codigoEstudiante' => $_POST['codigoEstudiante'], 
             'nombreEstudiante' => $_POST['nombreEstudiante'], 
@@ -109,7 +109,7 @@ class IngresosController {
             'idSala' => $_POST['idSala']
         ];
     
-        // Intentar registrar el ingreso
+        
         if ($this->registrarIngreso($datos['codigoEstudiante'], $datos['nombreEstudiante'], $datos['idPrograma'], $datos['idSala'], $datos['idResponsable'], $datos['fechaIngreso'], $datos['horaIngreso'])) {
             echo "<script>alert('Ingreso registrado correctamente'); window.location.href = '../public/index.php?mensaje=ingreso_registrado';</script>";
             exit;

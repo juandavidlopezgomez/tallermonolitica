@@ -1,4 +1,4 @@
-<!-- views/ingresos/crear.php -->
+
 <?php
 require_once __DIR__ . '/../../controllers/ConsultasController.php';
 session_start();

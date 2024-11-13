@@ -9,17 +9,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $codigoEstudiante = $_POST['codigoEstudiante'];
     $nombreEstudiante = $_POST['nombreEstudiante'];
 
-    // Realizar la actualización
+    
     $resultado = $controller->actualizarIngreso($id, $codigoEstudiante, $nombreEstudiante);
 
-    // Mensaje de éxito o error
     if ($resultado) {
         $_SESSION['mensaje'] = "Modificación exitosa";
     } else {
         $_SESSION['mensaje'] = "Error al modificar";
     }
 
-    // Redirecciona para mostrar el mensaje
     header('Location: modificar.php?id=' . $id);
     exit;
 }
@@ -63,7 +61,7 @@ if (!$ingreso) {
         <button type="submit">Guardar Cambios</button>
     </form>
 
-    <!-- Ventana emergente para mensajes -->
+    
     <?php if (isset($_SESSION['mensaje'])): ?>
         <div class="popup">
             <p><?php echo $_SESSION['mensaje']; unset($_SESSION['mensaje']); ?></p>

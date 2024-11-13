@@ -8,7 +8,7 @@ class Ingreso {
         $this->conexion = Conexion::getInstance()->getConexion();
     }
 
-    // Método para registrar un ingreso
+
     public function registrarIngreso($datos) {
         $query = "INSERT INTO ingresos 
                   (codigoEstudiante, nombreEstudiante, idPrograma, fechaIngreso, 
@@ -27,7 +27,7 @@ class Ingreso {
                 $datos['idSala']
             ]);
 
-            // Devuelve éxito o fallo
+           
             return $result;
         } catch (PDOException $e) {
             error_log("Error al registrar el ingreso: " . $e->getMessage());
@@ -35,14 +35,14 @@ class Ingreso {
         }
     }
 
-    // Método para registrar la salida de un ingreso
+  
     public function registrarSalida($id, $horaSalida) {
         $query = "UPDATE ingresos SET horaSalida = ? WHERE id = ?";
         $stmt = $this->conexion->prepare($query);
         return $stmt->execute([$horaSalida, $id]);
     }
     
-    // Método para obtener ingresos por una fecha específica
+    
     public function obtenerIngresosPorFecha($fecha) {
         $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
                   FROM ingresos i 
@@ -51,7 +51,7 @@ class Ingreso {
                   JOIN responsables r ON i.idResponsable = r.id 
                   WHERE DATE(i.fechaIngreso) = ?";
         
-        error_log("Fecha para la consulta de ingresos: " . $fecha); // Registro de depuración para la fecha
+        error_log("Fecha para la consulta de ingresos: " . $fecha); 
         
         $stmt = $this->conexion->prepare($query);
         $stmt->execute([$fecha]);
@@ -66,7 +66,7 @@ class Ingreso {
         return $resultados;
     }
 
-    // Método para obtener ingresos por rango de fechas
+    
     public function obtenerIngresosPorRango($fechaInicio, $fechaFin) {
         $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
                   FROM ingresos i 
@@ -79,7 +79,7 @@ class Ingreso {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Método para modificar datos de un ingreso
+   
     public function modificarIngreso($id, $codigoEstudiante, $nombreEstudiante) {
         $query = "UPDATE ingresos 
                   SET codigoEstudiante = ?, nombreEstudiante = ?, updated_at = NOW() 
@@ -88,7 +88,7 @@ class Ingreso {
         return $stmt->execute([$codigoEstudiante, $nombreEstudiante, $id]);
     }
 
-    // Método para buscar ingresos por filtros
+    
     public function buscarPorFiltros($filtros) {
         $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
                   FROM ingresos i 
@@ -116,7 +116,7 @@ class Ingreso {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Método para obtener un ingreso por ID
+
     public function obtenerIngresoPorId($id) {
         $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
                   FROM ingresos i
@@ -129,7 +129,7 @@ class Ingreso {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    // Método para actualizar la hora de salida de un ingreso por ID
+ 
     public function actualizarHoraSalida($id) {
         $sql = "UPDATE ingresos SET horaSalida = NOW() WHERE id = :id";
         $stmt = $this->conexion->prepare($sql);

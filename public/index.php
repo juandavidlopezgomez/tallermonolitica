@@ -2,14 +2,14 @@
 require_once __DIR__ . '/../controllers/IngresosController.php';
 session_start();
 
-// Crear instancia del controlador de ingresos
+
 $controller = new IngresosController();
 
-// Configura una fecha de prueba para depuración o usa `null` para la fecha actual
-$fechaPrueba = null; // Cambia a una fecha de prueba específica como '2023-11-10' si es necesario
+
+$fechaPrueba = null; 
 $ingresos = $controller->index($fechaPrueba);
 
-// Registro de depuración para verificar el número de ingresos obtenidos
+
 error_log("Total de ingresos obtenidos: " . count($ingresos));
 ?>
 <!DOCTYPE html>

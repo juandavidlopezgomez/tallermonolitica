@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $codigoEstudiante = $_POST['codigoEstudiante'];
     $nombreEstudiante = $_POST['nombreEstudiante'];
 
-    // Llamada al método de actualización
+   
     $resultado = $controller->actualizarIngreso($id, $codigoEstudiante, $nombreEstudiante);
 
     if ($resultado) {
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['mensaje'] = "Error al modificar";
     }
 
-    // Redirecciona de nuevo a la lista
+
     header('Location: lista.php');
     exit;
 }
@@ -62,7 +62,7 @@ if (!$ingreso) {
         <button type="submit">Guardar Cambios</button>
     </form>
 
-    <!-- Ventana emergente para mensajes -->
+ 
     <?php if (isset($_SESSION['mensaje'])): ?>
         <div class="popup">
             <p><?php echo $_SESSION['mensaje']; unset($_SESSION['mensaje']); ?></p>

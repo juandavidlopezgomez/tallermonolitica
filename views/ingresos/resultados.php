@@ -5,19 +5,19 @@ session_start();
 $controller = new ConsultasController();
 
 if ($_POST['tipo_consulta'] === 'rango') {
-    // Obtenemos las fechas de inicio y fin del formulario
+    
     $fechaInicio = $_POST['fechaInicio'];
     $fechaFin = $_POST['fechaFin'];
-    // Realizamos la consulta por rango de fechas
+  
     $ingresos = $controller->consultarPorRango($fechaInicio, $fechaFin);
 } else {
-    // Obtenemos los filtros específicos del formulario
+  
     $filtros = [
         'codigoEstudiante' => $_POST['codigoEstudiante'] ?? null,
         'idPrograma' => $_POST['idPrograma'] ?? null,
         'idResponsable' => $_POST['idResponsable'] ?? null,
     ];
-    // Realizamos la consulta por filtros
+   
     $ingresos = $controller->consultarPorFiltros($filtros);
 }
 ?>
