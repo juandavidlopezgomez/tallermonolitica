@@ -36,7 +36,8 @@ error_log("Total de ingresos obtenidos: " . count($ingresos));
 
         <main>
             <section class="ingresos-actuales">
-                <h2>Ingresos del Día</h2>
+                <h2>Ingresos del Día de la fecha de hoy</h2>
+                <h3>no se muestran los de otras fechas</h3>
                 
                 <?php if (isset($_SESSION['success'])): ?>
                     <div class="alert success"><?php echo $_SESSION['success']; unset($_SESSION['success']); ?></div>

@@ -13,7 +13,7 @@ $ingresos = $controller->index();
     <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
-    <h1>Ingresos del Día</h1>
+    <h1>Ingresos del Día del la fecha de hoy</h1>
     
     <nav>
         <a href="crear.php">Nuevo Ingreso</a> |
