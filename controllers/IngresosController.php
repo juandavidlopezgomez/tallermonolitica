@@ -1,11 +1,12 @@
 <?php 
 
+date_default_timezone_set('America/Mexico_City'); // Cambia a la zona horaria correcta
 require_once __DIR__ . '/../models/Ingreso.php'; 
 require_once __DIR__ . '/../models/Horario.php'; 
 require_once __DIR__ . '/../models/Programa.php'; 
 require_once __DIR__ . '/../models/Sala.php'; 
 require_once __DIR__ . '/../models/Responsable.php'; 
-require_once __DIR__ . '/../config/conexion.php'; // Asegúrate de incluir la conexión 
+require_once __DIR__ . '/../config/conexion.php';
 
 class IngresosController { 
     private $ingresoModel; 
@@ -22,6 +23,9 @@ class IngresosController {
         $this->programaModel = new Programa();
         $this->salaModel = new Sala();
         $this->responsableModel = new Responsable();
+    
+        // Registro de depuración para la conexión
+        error_log("Conexión a la base de datos establecida correctamente.");
     }
     
     public function registrarIngreso($codigoEstudiante, $nombreEstudiante, $idPrograma, $idSala, $idResponsable, $fechaIngreso, $horaIngreso) { 
@@ -42,11 +46,16 @@ class IngresosController {
         }
         
         return $success; 
-    } 
+    }
 
-    public function index() { 
-        return $this->ingresoModel->obtenerIngresosPorFecha(date('Y-m-d')); 
-    } 
+    public function index($fecha = null) {
+        // Usa la fecha actual si no se proporciona otra fecha
+        $fecha = $fecha ?? date('Y-m-d');
+        error_log("Consultando ingresos para la fecha: " . $fecha);
+        
+        // Llamada al modelo para obtener ingresos por fecha
+        return $this->ingresoModel->obtenerIngresosPorFecha($fecha);
+    }
 
     public function obtenerProgramas() { 
         return $this->programaModel->obtenerTodos(); 
@@ -67,7 +76,6 @@ class IngresosController {
         $diaActual = date('l'); // Obtiene el día de la semana en inglés (e.g., "Sunday")
         $horaActual = date('H:i:s'); // Hora actual en formato 24h
 
-    
         // Validar que no sea domingo
         if ($diaActual === 'Sunday') {
             echo "<script>alert('Día no permitido para registro de ingresos.'); window.location.href = '../views/ingresos/crear.php';</script>";
@@ -110,7 +118,6 @@ class IngresosController {
             exit;
         }
     }
-    
 
     private function traducirDia($dia) { 
         $dias = [ 
@@ -121,9 +128,8 @@ class IngresosController {
         return $dias[$dia]; 
     } 
 
-    // Método para registrar la salida de un ingreso
     public function registrarSalida($id) {
-        $conexion = Conexion::getInstance()->getConexion(); // Usar Singleton
+        $conexion = Conexion::getInstance()->getConexion();
 
         $sql = "UPDATE ingresos SET horaSalida = NOW() WHERE id = :id AND horaSalida IS NULL";
         $stmt = $conexion->prepare($sql);

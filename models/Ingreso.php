@@ -27,7 +27,7 @@ class Ingreso {
                 $datos['idSala']
             ]);
 
-            // Return success or failure
+            // Devuelve éxito o fallo
             return $result;
         } catch (PDOException $e) {
             error_log("Error al registrar el ingreso: " . $e->getMessage());
@@ -35,24 +35,36 @@ class Ingreso {
         }
     }
 
+    // Método para registrar la salida de un ingreso
     public function registrarSalida($id, $horaSalida) {
         $query = "UPDATE ingresos SET horaSalida = ? WHERE id = ?";
         $stmt = $this->conexion->prepare($query);
         return $stmt->execute([$horaSalida, $id]);
     }
     
+    // Método para obtener ingresos por una fecha específica
     public function obtenerIngresosPorFecha($fecha) {
         $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
                   FROM ingresos i 
                   JOIN programas p ON i.idPrograma = p.id 
                   JOIN salas s ON i.idSala = s.id 
                   JOIN responsables r ON i.idResponsable = r.id 
-                  WHERE i.fechaIngreso = ?";
+                  WHERE DATE(i.fechaIngreso) = ?";
+        
+        error_log("Fecha para la consulta de ingresos: " . $fecha); // Registro de depuración para la fecha
+        
         $stmt = $this->conexion->prepare($query);
         $stmt->execute([$fecha]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        if (empty($resultados)) {
+            error_log("No se encontraron ingresos para la fecha: " . $fecha);
+        } else {
+            error_log("Ingresos encontrados: " . count($resultados));
+        }
+        
+        return $resultados;
     }
-    
 
     // Método para obtener ingresos por rango de fechas
     public function obtenerIngresosPorRango($fechaInicio, $fechaFin) {
@@ -104,6 +116,7 @@ class Ingreso {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Método para obtener un ingreso por ID
     public function obtenerIngresoPorId($id) {
         $query = "SELECT i.*, p.nombre as programa, s.nombre as sala, r.nombre as responsable 
                   FROM ingresos i
@@ -116,14 +129,11 @@ class Ingreso {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    // archivo: models/Ingreso.php
-
-public function actualizarHoraSalida($id) {
-    $sql = "UPDATE ingresos SET horaSalida = NOW() WHERE id = :id";
-    $stmt = $this->db->prepare($sql);
-    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-    return $stmt->execute();
-}
-
-
+    // Método para actualizar la hora de salida de un ingreso por ID
+    public function actualizarHoraSalida($id) {
+        $sql = "UPDATE ingresos SET horaSalida = NOW() WHERE id = :id";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
 }

@@ -17,34 +17,34 @@ class ConsultasController {
         $this->salaModel = new Sala();
     }
 
-    // Mostrar formulario para la consulta
+   
     public function mostrarFormulario() {
         $programas = $this->programaModel->obtenerTodos();
         $responsables = $this->responsableModel->obtenerTodos();
         require_once __DIR__ . '/../views/ingresos/consulta.php';
     }
 
-    // Método para obtener todos los programas
+    
     public function obtenerProgramas() {
         return $this->programaModel->obtenerTodos();
     }
 
-    // Método para obtener todos los responsables
+
     public function obtenerResponsables() {
         return $this->responsableModel->obtenerTodos();
     }
 
-    // Método para obtener todas las salas
+  
     public function obtenerSalas() {
         return $this->salaModel->obtenerTodas();
     }
 
-    // Método para consultar ingresos por rango de fechas
+
     public function consultarPorRango($fechaInicio, $fechaFin) {
         return $this->ingresoModel->obtenerIngresosPorRango($fechaInicio, $fechaFin);
     }
 
-    // Método para consultar ingresos con filtros específicos
+    
     public function consultarPorFiltros($filtros) {
         return $this->ingresoModel->buscarPorFiltros($filtros);
     }
